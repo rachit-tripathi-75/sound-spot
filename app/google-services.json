@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "626651635512",
+    "project_id": "sound-spot-dd1f8",
+    "storage_bucket": "sound-spot-dd1f8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:626651635512:android:0892775c6ce4ab85872bcd",
+        "android_client_info": {
+          "package_name": "com.example.soundspot"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgs8O43AJDfHw18Iq7u8OeKcES5IqewQI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:foregroundGravity="center"
+    android:background="@drawable/playerbackground">
+
+    <ImageView
+        android:id="@+id/ivAlbumArt"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="140dp"
+        android:background="@drawable/album_art_layout"
+        android:src="@drawable/albumartplaceholder"
+        android:scaleType="fitCenter"/>
+
+    <TextView
+        android:id="@+id/tvSongName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:layout_gravity="center"
+        android:layout_marginTop="30dp"
+        android:text="songtextview"
+        android:textSize="10sp"
+        android:textAllCaps="true"
+        android:fontFamily="sans-serif-condensed"/>
+
+    <TextView
+        android:id="@+id/tvArtistName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:layout_gravity="center"
+        android:layout_marginTop="30dp"
+        android:text="artisttextview"
+        android:textSize="8sp"
+        android:textAllCaps="true"
+        android:fontFamily="sans-serif-condensed"/>
+
+
+
+    
+
+</LinearLayout>
