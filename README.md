@@ -7,11 +7,13 @@ Stream your favorite songs and artists seamlessly, right at your fingertips.
 Features:
 
 Personalized Recommendations:
+
 Tech Stack Used: Kotlin, Jetpack Compose, AWS, Tensorflow Lite
 • Features: Offline downloads, import playlist, share songs snippet,
 blend playlist, song recommendation
 • ML Model used for recommendation: Collaborative Filtering,
 Content-based Filtering, KNN Algorithm, Multiple Linear Regression
+
 Getting Started:
 
 Clone the repository: git clone https://github.com/rachit-tripathi-75/sound-spot.git
