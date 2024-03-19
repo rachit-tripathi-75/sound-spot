@@ -64,7 +64,7 @@ class SignInActivity : AppCompatActivity() {
                 val user = auth.currentUser
                 btnSignIn.setVisibility(View.VISIBLE);
                 progressBar.setVisibility(View.INVISIBLE);
-                startActivity(Intent(this@SignInActivity, MainActivity::class.java))
+                startActivity(Intent(this@SignInActivity, HomeActivity::class.java))
                 finish()
             } else {
                 btnSignIn.setVisibility(View.VISIBLE);

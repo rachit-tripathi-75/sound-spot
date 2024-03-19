@@ -38,7 +38,7 @@ class SignUpActivity : AppCompatActivity() {
                 val user = auth.currentUser
                 binding.btnSignUp.setVisibility(View.VISIBLE);
                 binding.progressBar.setVisibility(View.INVISIBLE);
-                startActivity(Intent(this@SignUpActivity, MainActivity::class.java))
+                startActivity(Intent(this@SignUpActivity, HomeActivity::class.java))
                 finish()
             } else {
                 binding.btnSignUp.setVisibility(View.VISIBLE);

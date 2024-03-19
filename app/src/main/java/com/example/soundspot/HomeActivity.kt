@@ -9,6 +9,7 @@ import com.example.soundspot.databinding.ActivityHomeBinding
 import com.google.android.gms.dynamic.SupportFragmentWrapper
 import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
 
 class HomeActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHomeBinding
@@ -16,6 +17,10 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        binding.ivProfilePic.setOnClickListener {
+            signOut()
+        }
 
         var bottomNav = binding.bottomNavigationView
         bottomNav.setOnItemSelectedListener {
@@ -48,6 +53,13 @@ class HomeActivity : AppCompatActivity() {
             startActivity(Intent(this@HomeActivity, MainActivity::class.java))
 
         }
+    }
+
+    private fun signOut() {
+        var firebaseAuth = FirebaseAuth.getInstance()
+        firebaseAuth.signOut()
+        startActivity(Intent(this@HomeActivity, SignInActivity::class.java))
+        finish()
     }
 
     private fun replacePlayerFragment(playerFragment: PlayerFragment) {
