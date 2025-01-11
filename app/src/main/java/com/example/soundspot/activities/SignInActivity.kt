@@ -1,9 +1,8 @@
-package com.example.soundspot
+package com.example.soundspot.activities
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.TextUtils
 import android.util.Patterns
 import android.view.View
 import android.widget.Button
@@ -11,8 +10,6 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import com.example.soundspot.databinding.ActivitySignInBinding
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.MainScope
-import java.util.regex.Pattern
 
 class SignInActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignInBinding
@@ -22,9 +19,9 @@ class SignInActivity : AppCompatActivity() {
         binding = ActivitySignInBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.tvSignUpAnnotation.setOnClickListener {
-            startActivity(Intent(this@SignInActivity, SignUpActivity::class.java))
-        }
+//        binding.tvSignUpAnnotation.setOnClickListener {
+//            startActivity(Intent(this@SignInActivity, SignUpActivity::class.java))
+//        }
         binding.btnSignIn.setOnClickListener {
             var isLoading: Boolean = true
             if(isValidSignIn() == true) {
@@ -78,7 +75,7 @@ class SignInActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         if (auth.currentUser != null) {
-            startActivity(Intent(this@SignInActivity, MainActivity::class.java))
+//            startActivity(Intent(this@SignInActivity, MainActivity::class.java))
             finish()
         }
     }
