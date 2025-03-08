@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    <color name="background">@color/background_light</color>
+    <color name="textMain">@color/text_dark</color>
+    <color name="textSec">@color/text_secondary_dark</color>
+    <color name="buttonBackground">@color/button_light</color>
+    <color name="dividerBackground">@color/divider_dark</color>
+    <color name="green">@color/spotify_light_green</color>
+
+    <!-- Primary colors -->
+    <color name="spotify_green">#1DB954</color> <!-- Spotify Green -->
+    <color name="spotify_black">#191414</color> <!-- Spotify Black -->
+
+
+    <!-- added ones -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF370083</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="lavender">#8692F7</color>
+    <color name="login_button_background_color">#FF000000</color>
+    <color name="signup_button_background_color">#FFFFFF</color>
+    <color name="transparent_color">#00000000</color>
+    <color name="bottom_nav_color">#000000</color>
+
+
+    <!-- Secondary colors -->
+    <color name="spotify_dark_green">#1DB954</color>
+    <color name="spotify_light_green">#1ED760</color>
+
+    <!-- Background colors -->
+    <color name="background_dark">#121212</color>
+    <color name="background_light">#FAF9F6</color>
+
+    <!-- Text colors -->
+    <color name="text_light">#FAF9F6</color>
+    <color name="text_dark">#191414</color>
+    <color name="text_secondary_light">#B3B3B3</color>
+    <color name="text_secondary_dark">#3D3D3D</color>
+
+    <!-- Divider and accent colors -->
+    <color name="divider_light">#E6E6E6</color>
+    <color name="divider_dark">#333333</color>
+
+    <!-- Button colors -->
+    <color name="button_dark">#1DB954</color>
+    <color name="button_light">#1DB954</color>
+    <color name="light_blue_400">#FF29B6F6</color>
+    <color name="light_blue_600">#FF039BE5</color>
+    <color name="gray_400">#FFBDBDBD</color>
+    <color name="gray_600">#FF757575</color>
+
+</resources>
