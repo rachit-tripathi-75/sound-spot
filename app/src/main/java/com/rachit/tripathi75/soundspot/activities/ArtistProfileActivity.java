@@ -44,6 +44,7 @@ import java.util.List;
  */
 public class ArtistProfileActivity extends AppCompatActivity {
 
+
     private final String TAG = "ArtistProfileActivity";
     ActivityArtistProfileBinding binding;
 
@@ -64,6 +65,7 @@ public class ArtistProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityArtistProfileBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
 
         setSupportActionBar(binding.collapsingToolbar);
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -105,7 +107,7 @@ public class ArtistProfileActivity extends AppCompatActivity {
         });
 
         showShimmerData();
-        //showData();
+        showData();
     }
 
     @Override
@@ -119,6 +121,7 @@ public class ArtistProfileActivity extends AppCompatActivity {
         super.onPause();
         NetworkChangeReceiver.unregisterReceiver(this, networkChangeReceiver);
     }
+
 
     private String artistId = "9999";
 

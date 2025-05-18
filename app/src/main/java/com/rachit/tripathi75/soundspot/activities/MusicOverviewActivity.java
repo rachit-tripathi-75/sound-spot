@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
+import android.widget.MediaController;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,7 +22,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
+import androidx.core.view.WindowCompat;
+import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
+import androidx.media3.exoplayer.ExoPlayer;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -71,6 +75,7 @@ public class MusicOverviewActivity extends AppCompatActivity implements ActionPl
     private String ID_FROM_EXTRA = "";
     private String IMAGE_URL = "";
     MusicService musicService;
+    private boolean isSnipVisible = false;
     private List<SongResponse.Artist> artsitsList = new ArrayList<>();
 
     //    @SuppressLint("ClickableViewAccessibility")
@@ -84,20 +89,36 @@ public class MusicOverviewActivity extends AppCompatActivity implements ActionPl
         binding.description.setSelected(true);
 
         if (!(((ApplicationClass) getApplicationContext()).getTrackQueue().size() > 1))
-            binding.shuffleIcon.setVisibility(View.INVISIBLE);
+            binding.shuffleIcon.setVisibility(View.VISIBLE);
 
         binding.playPauseImage.setOnClickListener(view -> {
             if (ApplicationClass.player.isPlaying()) {
                 handler.removeCallbacks(runnable);
                 ApplicationClass.player.pause();
-                binding.playPauseImage.setImageResource(com.rachit.tripathi75.soundspot.R.drawable.play_arrow_24px);
+                binding.playPauseImage.setImageResource(R.drawable.ic_play);
             } else {
                 ApplicationClass.player.play();
-                binding.playPauseImage.setImageResource(R.drawable.baseline_pause_24);
+                binding.playPauseImage.setImageResource(R.drawable.ic_pause);
                 updateSeekbar();
             }
             showNotification(ApplicationClass.player.isPlaying() ? R.drawable.baseline_pause_24 : R.drawable.play_arrow_24px);
         });
+
+        binding.snipBadge.setOnClickListener(view -> {
+            if(isSnipVisible) {
+                isSnipVisible = false;
+                binding.coverImage.setVisibility(View.GONE);
+                binding.vvSnip.setVisibility(View.VISIBLE);
+                binding.tvSnipAlbumArtSwitch.setText("Album Art");
+            } else {
+                binding.vvSnip.setVisibility(View.GONE);
+                binding.coverImage.setVisibility(View.VISIBLE);
+                isSnipVisible = true;
+                binding.tvSnipAlbumArtSwitch.setText("Snip");
+            }
+        });
+
+        playSnip();
 
         binding.seekbar.setMax(100);
 
@@ -147,7 +168,7 @@ public class MusicOverviewActivity extends AppCompatActivity implements ActionPl
             else
                 binding.repeatIcon.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.spotify_green)));
 
-            Toast.makeText(MusicOverviewActivity.this, "Repeat Mode Changed.", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(MusicOverviewActivity.this, "Repeat Mode Changed.", Toast.LENGTH_SHORT).show();
         });
 
         binding.shuffleIcon.setOnClickListener(view -> {
@@ -158,7 +179,7 @@ public class MusicOverviewActivity extends AppCompatActivity implements ActionPl
             else
                 binding.shuffleIcon.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.textSec)));
 
-            Toast.makeText(MusicOverviewActivity.this, "Shuffle Mode Changed.", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(MusicOverviewActivity.this, "Shuffle Mode Changed.", Toast.LENGTH_SHORT).show();
         });
 
         binding.shareIcon.setOnClickListener(view -> {
@@ -237,30 +258,49 @@ public class MusicOverviewActivity extends AppCompatActivity implements ActionPl
             bottomSheetDialog.show();
         });
 
-        binding.trackQuality.setOnClickListener(view -> {
-            PopupMenu popupMenu = new PopupMenu(MusicOverviewActivity.this, view);
-            popupMenu.getMenuInflater().inflate(R.menu.track_quality_menu, popupMenu.getMenu());
-            popupMenu.setOnMenuItemClickListener(menuItem -> {
-                Toast.makeText(MusicOverviewActivity.this, menuItem.getTitle(), Toast.LENGTH_SHORT).show();
-                //Objects.requireNonNull(menuItem.getTitle());
-                ApplicationClass.setTrackQuality(menuItem.getTitle().toString());
-                onSongFetched(mSongResponse, true);
-                prepareMediaPLayer();
-                binding.trackQuality.setText(ApplicationClass.TRACK_QUALITY);
-                return true;
-            });
-            popupMenu.show();
-        });
-
-        binding.trackQuality.setText(ApplicationClass.TRACK_QUALITY);
+//        binding.trackQuality.setOnClickListener(view -> {
+//            PopupMenu popupMenu = new PopupMenu(MusicOverviewActivity.this, view);
+//            popupMenu.getMenuInflater().inflate(R.menu.track_quality_menu, popupMenu.getMenu());
+//            popupMenu.setOnMenuItemClickListener(menuItem -> {
+//                Toast.makeText(MusicOverviewActivity.this, menuItem.getTitle(), Toast.LENGTH_SHORT).show();
+//                //Objects.requireNonNull(menuItem.getTitle());
+//                ApplicationClass.setTrackQuality(menuItem.getTitle().toString());
+//                onSongFetched(mSongResponse, true);
+//                prepareMediaPLayer();
+//                binding.trackQuality.setText(ApplicationClass.TRACK_QUALITY);
+//                return true;
+//            });
+//            popupMenu.show();
+//        });
+//
+//        binding.trackQuality.setText(ApplicationClass.TRACK_QUALITY);
 
         showData();
 
         updateTrackInfo();
 
-        binding.ivShowLyrics.setOnClickListener(view -> {
-            showLyricsBottomSheetDialog();
-        });
+//        binding.ivShowLyrics.setOnClickListener(view -> {
+//            showLyricsBottomSheetDialog();
+//        });
+    }
+
+
+    private void playSnip() {
+
+        // Initialize ExoPlayer
+        ExoPlayer player = new ExoPlayer.Builder(this).build();
+        binding.vvSnip.setPlayer(player);
+
+        // Load video from raw folder
+        Uri videoUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.laalpari);
+        MediaItem mediaItem = MediaItem.fromUri(videoUri);
+        player.setMediaItem(mediaItem);
+
+        // Looping enabled
+        player.setRepeatMode(ExoPlayer.REPEAT_MODE_ALL);
+
+        player.prepare();
+        player.play();
     }
 
     private void showLyricsBottomSheetDialog() {
