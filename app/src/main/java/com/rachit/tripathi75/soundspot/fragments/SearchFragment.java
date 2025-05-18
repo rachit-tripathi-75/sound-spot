@@ -36,11 +36,9 @@ public class SearchFragment extends Fragment {
     private final String TAG = "SearchActivity";
     GlobalSearch globalSearch;
 
-    private Context context;
 
-    public SearchFragment(Context context) {
+    public SearchFragment() {
         // Required empty public constructor
-        this.context = context;
     }
 
     @Override
@@ -50,7 +48,7 @@ public class SearchFragment extends Fragment {
 
 
         OverScrollDecoratorHelper.setUpOverScroll(binding.hscrollview);
-        binding.recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
         binding.edittext.requestFocus();
 
@@ -104,7 +102,7 @@ public class SearchFragment extends Fragment {
     }
 
     private void hideKeyboard(View view) {
-        InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager inputMethodManager = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         if (inputMethodManager != null) {
             inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }

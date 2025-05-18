@@ -22,10 +22,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.rachittripathi75.soundpost" />
+                  <option name="mobileSdkAppId" value="1:168407732473:android:77a5e817a0e81e17899228" />
+                  <option name="projectId" value="sound-spot-ad7f0" />
+                  <option name="projectNumber" value="168407732473" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

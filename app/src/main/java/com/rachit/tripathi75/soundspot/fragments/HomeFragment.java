@@ -3,35 +3,47 @@ package com.rachit.tripathi75.soundspot.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.facebook.login.LoginManager;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
 import com.rachit.tripathi75.soundspot.ApplicationClass;
 import com.rachit.tripathi75.soundspot.R;
 import com.rachit.tripathi75.soundspot.activities.AboutActivity;
-import com.rachit.tripathi75.soundspot.activities.HostActivity;
 import com.rachit.tripathi75.soundspot.activities.MusicOverviewActivity;
 import com.rachit.tripathi75.soundspot.activities.SavedLibrariesActivity;
 import com.rachit.tripathi75.soundspot.activities.SettingsActivity;
+import com.rachit.tripathi75.soundspot.activities.SplashScreenActivity;
 import com.rachit.tripathi75.soundspot.adapters.ActivityMainAlbumItemAdapter;
 import com.rachit.tripathi75.soundspot.adapters.ActivityMainArtistsItemAdapter;
 import com.rachit.tripathi75.soundspot.adapters.ActivityMainPlaylistAdapter;
 import com.rachit.tripathi75.soundspot.adapters.ActivityMainPopularSongs;
 import com.rachit.tripathi75.soundspot.adapters.SavedLibrariesAdapter;
+import com.rachit.tripathi75.soundspot.classes.PrefsManager;
 import com.rachit.tripathi75.soundspot.databinding.FragmentHomeBinding;
 import com.rachit.tripathi75.soundspot.model.AlbumItem;
 import com.rachit.tripathi75.soundspot.network.ApiManager;
@@ -43,6 +55,10 @@ import com.rachit.tripathi75.soundspot.records.PlaylistsSearch;
 import com.rachit.tripathi75.soundspot.records.SongSearch;
 import com.rachit.tripathi75.soundspot.records.sharedpref.SavedLibraries;
 import com.rachit.tripathi75.soundspot.utils.SharedPreferenceManager;
+import com.skydoves.powermenu.MenuAnimation;
+import com.skydoves.powermenu.OnMenuItemClickListener;
+import com.skydoves.powermenu.PowerMenu;
+import com.skydoves.powermenu.PowerMenuItem;
 import com.squareup.picasso.Picasso;
 import com.yarolegovich.slidingrootnav.SlidingRootNav;
 import com.yarolegovich.slidingrootnav.SlidingRootNavBuilder;
@@ -67,16 +83,17 @@ public class HomeFragment extends Fragment {
     private final List<ArtistsSearch.Data.Results> artists = new ArrayList<>();
     private final List<AlbumItem> albums = new ArrayList<>();
     private final List<AlbumItem> playlists = new ArrayList<>();
-
-    private Context context;
     private SlidingRootNav slidingRootNavBuilder;
 
     Handler handler = new Handler();
     Runnable runnable = this::showPlayBarData;
 
-    public HomeFragment(Context context) {
+    private PowerMenu powerMenu;
+    private ActivityOptionsCompat options;
+
+
+    public HomeFragment() {
         // Required empty public constructor
-        this.context = context;
     }
 
     NetworkChangeReceiver networkChangeReceiver = new NetworkChangeReceiver(new NetworkChangeReceiver.NetworkStatusListener() {
@@ -111,6 +128,7 @@ public class HomeFragment extends Fragment {
         applicationClass = (ApplicationClass) requireActivity().getApplication();
         ApplicationClass.setCurrentActivity(requireActivity());
         ApplicationClass.updateTheme();
+        options = ActivityOptionsCompat.makeCustomAnimation(requireContext(), R.anim.fade_in, R.anim.fade_out);
 
         slidingRootNavBuilder = new SlidingRootNavBuilder(requireActivity())
                 .withMenuLayout(R.layout.main_drawer_layout)
@@ -122,18 +140,21 @@ public class HomeFragment extends Fragment {
 
 //        binding.profileIcon.setOnClickListener(view -> slidingRootNavBuilder.openMenu(true));
 
-        int span = calculateNoOfColumns(context, 200);
-        binding.playlistRecyclerView.setLayoutManager(new GridLayoutManager(context, span));
+        int span = calculateNoOfColumns(requireContext(), 200);
+        binding.playlistRecyclerView.setLayoutManager(new GridLayoutManager(requireContext(), span));
 
-        binding.popularSongsRecyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
-        binding.popularArtistsRecyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
-        binding.popularAlbumsRecyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
-        binding.savedRecyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+        binding.popularSongsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
+        binding.popularArtistsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
+        binding.popularAlbumsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
+        binding.savedRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
 
         OverScrollDecoratorHelper.setUpOverScroll(binding.popularSongsRecyclerView, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
         OverScrollDecoratorHelper.setUpOverScroll(binding.popularArtistsRecyclerView, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
         OverScrollDecoratorHelper.setUpOverScroll(binding.popularAlbumsRecyclerView, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
         OverScrollDecoratorHelper.setUpOverScroll(binding.savedRecyclerView, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
+
+        FirebaseAuth firebaseAuth = ApplicationClass.getFirebaseAuth();
+        FirebaseUser user = firebaseAuth.getCurrentUser();
 
 
         binding.refreshLayout.setOnRefreshListener(() -> {
@@ -164,6 +185,7 @@ public class HomeFragment extends Fragment {
             applicationClass.nextTrack();
         });
 
+        listeners();
         showShimmerData();
         showOfflineData();
 
@@ -175,11 +197,96 @@ public class HomeFragment extends Fragment {
         // ----------------------------------------------
 
 
+        // -------------- add the PowerMenu dialog -----------------------
+        powerMenu = new PowerMenu.Builder(requireContext())
+//                .addItem(new PowerMenuItem("Profile", false, R.drawable.user3))
+                .addItem(new PowerMenuItem("Settings", false, R.drawable.settings_24px))
+                .addItem(new PowerMenuItem("About Developer", false, R.drawable.round_info_outline_24))
+                .addItem(new PowerMenuItem("Sign Out", false, R.drawable.logout))
+                .setAnimation(MenuAnimation.DROP_DOWN)
+                .setMenuRadius(10f) // sets the corner radius.
+                .setMenuShadow(10f) // sets the shadow.
+                .setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+                .setTextGravity(Gravity.CENTER)
+                .setTextTypeface(Typeface.create("sans-serif-medium", Typeface.BOLD))
+                .setSelectedTextColor(Color.BLACK)
+                .setMenuColor(Color.BLACK)
+                .setSelectedMenuColor(ContextCompat.getColor(requireContext(), R.color.button_dark))
+                .setOnMenuItemClickListener(new OnMenuItemClickListener<PowerMenuItem>() {
+                    @Override
+                    public void onItemClick(int position, PowerMenuItem item) {
+//                        if (position == 0) {
+//                            Toast.makeText(applicationClass, "Opens Profile", Toast.LENGTH_SHORT).show();
+//                        }
+                        if (position == 0) {
+                            Intent intent = new Intent(requireContext(), SettingsActivity.class);
+                            startActivity(intent, options.toBundle());
+//                            Toast.makeText(applicationClass, "Opens Settings", Toast.LENGTH_SHORT).show();
+                        } else if (position == 1) {
+                            Intent intent = new Intent(requireContext(), AboutActivity.class);
+                            startActivity(intent, options.toBundle());
+                        } else if (position == 2) {
+                            signOut();
+                            PrefsManager.setSession(requireContext(), false);
+                            Intent intent = new Intent(requireContext(), SplashScreenActivity.class);
+                            startActivity(intent, options.toBundle());
+                            getActivity().finishAffinity();
+//                            Toast.makeText(applicationClass, "Signed Out", Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                })
+                .build();
+
+
         return binding.getRoot();
     }
 
+    private void signOut() {
+        int loggedInType = PrefsManager.getLogInType(requireContext());
+        Toast.makeText(requireContext(), "loginType: " + loggedInType, Toast.LENGTH_SHORT).show();
+        FirebaseAuth firebaseAuth = ApplicationClass.getFirebaseAuth();
+
+        if (loggedInType == 1) { // for Email & Password
+            firebaseAuth.signOut();
+        } else if (loggedInType == 2) { // Google Sign-Out
+            GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(requireContext(), GoogleSignInOptions.DEFAULT_SIGN_IN);
+            googleSignInClient.signOut().addOnCompleteListener(task -> {
+                firebaseAuth.signOut();
+                navigateToSplashScreen();
+            });
+            return;
+        } else if (loggedInType == 3) { // Facebook Sign-Out
+            LoginManager.getInstance().logOut();
+            firebaseAuth.signOut();
+        } else if (loggedInType == 4) { // Apple Sign-Out
+            // Apple sign-out logic, its to be implemented.....!!!
+        } else if (loggedInType == -1) { // Guest Mode
+            Toast.makeText(requireContext(), "An error occurred while logging out", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        PrefsManager.setSession(requireContext(), false);
+        navigateToSplashScreen(); // Ensures navigation happens for other login types
+    }
+
+    private void navigateToSplashScreen() {
+        Intent intent = new Intent(requireContext(), SplashScreenActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        requireActivity().finishAffinity();
+    }
+
+
+    private void listeners() {
+        binding.ivProfilePic.setOnClickListener(view -> {
+            powerMenu.showAsDropDown(binding.ivProfilePic);
+        });
+
+    }
+
     private void showSavedLibrariesData() {
-        SavedLibraries savedLibraries = SharedPreferenceManager.getInstance(context).getSavedLibrariesData();
+        SavedLibraries savedLibraries = SharedPreferenceManager.getInstance(requireContext()).getSavedLibrariesData();
         binding.savedLibrariesSection.setVisibility(savedLibraries != null && !(savedLibraries.lists().isEmpty()) ? View.VISIBLE : View.GONE);
         if (savedLibraries != null)
             binding.savedRecyclerView.setAdapter(new SavedLibrariesAdapter(savedLibraries.lists()));
@@ -236,19 +343,19 @@ public class HomeFragment extends Fragment {
 
     private void onDrawerItemsClicked() {
         slidingRootNavBuilder.getLayout().findViewById(R.id.settings).setOnClickListener(v -> {
-            startActivity(new Intent(context, SettingsActivity.class));
+            startActivity(new Intent(requireContext(), SettingsActivity.class));
             slidingRootNavBuilder.closeMenu();
         });
 
         slidingRootNavBuilder.getLayout().findViewById(R.id.logo).setOnClickListener(view -> slidingRootNavBuilder.closeMenu());
 
         slidingRootNavBuilder.getLayout().findViewById(R.id.library).setOnClickListener(view -> {
-            startActivity(new Intent(context, SavedLibrariesActivity.class));
+            startActivity(new Intent(requireContext(), SavedLibrariesActivity.class));
             slidingRootNavBuilder.closeMenu();
         });
 
         slidingRootNavBuilder.getLayout().findViewById(R.id.about).setOnClickListener(view -> {
-            startActivity(new Intent(context, AboutActivity.class));
+            startActivity(new Intent(requireContext(), AboutActivity.class));
             slidingRootNavBuilder.closeMenu();
         });
 
@@ -278,12 +385,13 @@ public class HomeFragment extends Fragment {
                 } else {
                     try {
                         showOfflineData();
-                        Toast.makeText(context, new JSONObject(response).getString("message"), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), new JSONObject(response).getString("message"), Toast.LENGTH_SHORT).show();
                     } catch (JSONException e) {
                         Log.e(TAG, "onResponse: ", e);
                     }
                 }
             }
+
 
             @Override
             public void onErrorResponse(String tag, String message) {
@@ -307,7 +415,7 @@ public class HomeFragment extends Fragment {
                 } else {
                     try {
                         showOfflineData();
-                        Toast.makeText(context, new JSONObject(response).getString("message"), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), new JSONObject(response).getString("message"), Toast.LENGTH_SHORT).show();
                     } catch (JSONException e) {
                         Log.e(TAG, "onResponse: ", e);
                     }
@@ -335,7 +443,7 @@ public class HomeFragment extends Fragment {
                     ApplicationClass.sharedPreferenceManager.setHomeAlbumsRecommended(albumsSearch);
                 } else {
                     try {
-                        Toast.makeText(context, new JSONObject(response).getString("message"), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), new JSONObject(response).getString("message"), Toast.LENGTH_SHORT).show();
                         showOfflineData();
                     } catch (JSONException e) {
                         Log.e(TAG, "onResponse: ", e);
@@ -367,7 +475,7 @@ public class HomeFragment extends Fragment {
                     ApplicationClass.sharedPreferenceManager.setHomePlaylistRecommended(playlistsSearch);
                 } else {
                     try {
-                        Toast.makeText(context, new JSONObject(response).getString("message"), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), new JSONObject(response).getString("message"), Toast.LENGTH_SHORT).show();
                         showOfflineData();
                     } catch (JSONException e) {
                         Log.e(TAG, "onResponse: ", e);
@@ -393,6 +501,7 @@ public class HomeFragment extends Fragment {
             });
         }
 
+
         if (ApplicationClass.sharedPreferenceManager.getHomeArtistsRecommended() != null) {
             ArtistsSearch artistsSearch = ApplicationClass.sharedPreferenceManager.getHomeArtistsRecommended();
             artistsSearch.data().results().forEach(results -> {
@@ -402,6 +511,7 @@ public class HomeFragment extends Fragment {
                 adapter.notifyDataSetChanged();
             });
         }
+
 
         if (ApplicationClass.sharedPreferenceManager.getHomeAlbumsRecommended() != null) {
             AlbumsSearch albumsSearch = ApplicationClass.sharedPreferenceManager.getHomeAlbumsRecommended();

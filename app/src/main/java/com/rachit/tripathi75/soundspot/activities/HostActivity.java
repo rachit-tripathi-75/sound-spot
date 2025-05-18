@@ -42,9 +42,9 @@ public class HostActivity extends AppCompatActivity {
 
         fragmentManager = getSupportFragmentManager();
 
-        homeFragment = new HomeFragment(HostActivity.this);
-        searchFragment = new SearchFragment(HostActivity.this);
-        libraryFragment = new LibraryFragment(HostActivity.this);
+        homeFragment = new HomeFragment();
+        searchFragment = new SearchFragment();
+        libraryFragment = new LibraryFragment();
         activeFragment = homeFragment;
 
 
@@ -80,7 +80,6 @@ public class HostActivity extends AppCompatActivity {
         showPlayBarData();
 
 
-
         binding.bottomBar.setOnItemSelectedListener((OnItemSelectedListener) position -> {
             if (position == 0) {
                 switchFragment(homeFragment);
@@ -94,15 +93,11 @@ public class HostActivity extends AppCompatActivity {
     }
 
     private void switchFragment(Fragment fragment) {
-        if (fragment == activeFragment) return;
-
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.hide(activeFragment);
-        transaction.show(fragment);
-        transaction.commit();
-
+        transaction.hide(activeFragment).show(fragment).commit();
         activeFragment = fragment;
     }
+
 
     void showPlayBarData() {
         binding.playBarMusicTitle.setText(ApplicationClass.MUSIC_TITLE);

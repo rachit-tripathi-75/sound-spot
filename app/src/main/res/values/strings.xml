@@ -1,6 +1,11 @@
 <resources>
     <string name="app_name">SoundSpot</string>
-    <string name="app_license">MIT License\n\nCopyright (c) 2024 Harsh S Shah\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.</string>
+<!--    <string name="app_license">MIT License\n\nCopyright (c) 2024 Harsh S Shah\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.</string>-->
+    <string name="app_license">(implement karna baaki hai......)</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="default_web_client_id">168407732473-t1l94k3rstn9pinb3cfq0ljakgm78a2b.apps.googleusercontent.com</string>
+    <string name="facebook_app_id">1701849100726163</string>
+    <string name="fb_login_protocol_scheme">fb1701849100726163</string>
+
 </resources>

@@ -8,12 +8,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -21,13 +23,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.media3.common.Player;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.rachit.tripathi75.soundspot.ApplicationClass;
 import com.rachit.tripathi75.soundspot.R;
+import com.rachit.tripathi75.soundspot.classes.ApiClient;
+import com.rachit.tripathi75.soundspot.classes.ApiServices;
+import com.rachit.tripathi75.soundspot.classes.GetLyricsResponse;
 import com.rachit.tripathi75.soundspot.databinding.ActivityMusicOverviewBinding;
+import com.rachit.tripathi75.soundspot.databinding.LyricsBottomSheetBinding;
 import com.rachit.tripathi75.soundspot.databinding.MusicOverviewMoreInfoBottomSheetBinding;
 import com.rachit.tripathi75.soundspot.model.AlbumItem;
 import com.rachit.tripathi75.soundspot.model.BasicDataRecord;
@@ -44,7 +51,15 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MusicOverviewActivity extends AppCompatActivity implements ActionPlaying, ServiceConnection {
 
@@ -58,7 +73,7 @@ public class MusicOverviewActivity extends AppCompatActivity implements ActionPl
     MusicService musicService;
     private List<SongResponse.Artist> artsitsList = new ArrayList<>();
 
-//    @SuppressLint("ClickableViewAccessibility")
+    //    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -174,12 +189,12 @@ public class MusicOverviewActivity extends AppCompatActivity implements ActionPl
                 );
             });
 
-            _binding.addToLibrary.setOnClickListener(v->{
+            _binding.addToLibrary.setOnClickListener(v -> {
                 int index = -1;
                 final SharedPreferenceManager sharedPreferenceManager = SharedPreferenceManager.getInstance(MusicOverviewActivity.this);
                 SavedLibraries savedLibraries = sharedPreferenceManager.getSavedLibrariesData();
                 if (savedLibraries == null) savedLibraries = new SavedLibraries(new ArrayList<>());
-                if(savedLibraries.lists().isEmpty()){
+                if (savedLibraries.lists().isEmpty()) {
                     Snackbar.make(_binding.getRoot(), "No Libraries Found", Snackbar.LENGTH_SHORT).show();
                     return;
                 }
@@ -194,7 +209,7 @@ public class MusicOverviewActivity extends AppCompatActivity implements ActionPl
 
             });
 
-            _binding.download.setOnClickListener(v->{
+            _binding.download.setOnClickListener(v -> {
                 // TODO: develop this
                 Toast.makeText(MusicOverviewActivity.this, "Under Development", Toast.LENGTH_SHORT).show();
             });
@@ -242,6 +257,77 @@ public class MusicOverviewActivity extends AppCompatActivity implements ActionPl
         showData();
 
         updateTrackInfo();
+
+        binding.ivShowLyrics.setOnClickListener(view -> {
+            showLyricsBottomSheetDialog();
+        });
+    }
+
+    private void showLyricsBottomSheetDialog() {
+
+        final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(MusicOverviewActivity.this);
+        final LyricsBottomSheetBinding lyricsBottomSheetBinding = LyricsBottomSheetBinding.inflate(getLayoutInflater());
+        lyricsBottomSheetBinding.albumTitle.setText(binding.title.getText().toString());
+        lyricsBottomSheetBinding.albumSubTitle.setText(binding.description.getText().toString());
+        Picasso.get().load(Uri.parse(IMAGE_URL)).into(lyricsBottomSheetBinding.coverImage);
+        getLyrics(lyricsBottomSheetBinding, binding.title.getText().toString(), binding.description.getText().toString());
+        bottomSheetDialog.setContentView(lyricsBottomSheetBinding.getRoot());
+        bottomSheetDialog.create();
+        lyricsBottomSheetBinding.getRoot().post(() -> {
+            View bottomSheet = bottomSheetDialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+            if (bottomSheet != null) {
+                BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(bottomSheet);
+//                behavior.setPeekHeight(Resources.getSystem().getDisplayMetrics().heightPixels); // full height
+//                behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                behavior.setDraggable(false);
+            }
+        });
+        bottomSheetDialog.show();
+    }
+
+    private void getLyrics(LyricsBottomSheetBinding lyricsBottomSheetDialog, String songTitle, String artists) {
+
+        lyricsBottomSheetDialog.progressBar.setVisibility(View.VISIBLE);
+
+        ApiServices.GetLyricsApiService getLyricsApiService = ApiClient.getClient().create(ApiServices.GetLyricsApiService.class);
+        Call<GetLyricsResponse> call = getLyricsApiService.getLyrics(
+                "application/json",
+                songTitle,
+                artists
+        );
+
+        call.enqueue(new Callback<GetLyricsResponse>() {
+            @Override
+            public void onResponse(Call<GetLyricsResponse> call, Response<GetLyricsResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    GetLyricsResponse s1 = response.body();
+                    Log.d("lyricsTAG", s1.getLyrics());
+                    lyricsBottomSheetDialog.progressBar.setVisibility(View.GONE);
+                    lyricsBottomSheetDialog.scrollView.setVisibility(View.VISIBLE);
+                    lyricsBottomSheetDialog.tvLyrics.setMovementMethod(new ScrollingMovementMethod());
+                    lyricsBottomSheetDialog.tvLyrics.setText(formatLyrics(s1.getLyrics()));
+//                    tvLyrics.setText(formatLyrics(s1.getLyrics()));
+                } else {
+                    Log.d("lyricsTAG", "response code: " + response.code());
+                    lyricsBottomSheetDialog.progressBar.setVisibility(View.GONE);
+                    lyricsBottomSheetDialog.scrollView.setVisibility(View.VISIBLE);
+                    lyricsBottomSheetDialog.tvLyrics.setText("Lyrics are not available for this song");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GetLyricsResponse> call, Throwable t) {
+                Log.d("lyricsTAG", t.getMessage());
+                lyricsBottomSheetDialog.progressBar.setVisibility(View.GONE);
+                lyricsBottomSheetDialog.scrollView.setVisibility(View.VISIBLE);
+                lyricsBottomSheetDialog.tvLyrics.setText("Oops!!! Something went wrong");
+            }
+        });
+    }
+
+    private String formatLyrics(String rawLyrics) {
+        String formattedLyrics = rawLyrics.replaceAll("\\\\r\\\\n|\\\\n|\\\\r", "\n");
+        return formattedLyrics;
     }
 
     @NonNull
@@ -348,18 +434,16 @@ public class MusicOverviewActivity extends AppCompatActivity implements ActionPl
 
     private SongResponse mSongResponse;
 
-    private void onSongFetched(SongResponse songResponse){
+    private void onSongFetched(SongResponse songResponse) {
         onSongFetched(songResponse, false);
     }
+
     private void onSongFetched(SongResponse songResponse, boolean forced) {
         mSongResponse = songResponse;
         binding.title.setText(songResponse.data().get(0).name());
-        binding.description.setText(
-                String.format("%s plays | %s | %s",
-                        convertPlayCount(songResponse.data().get(0).playCount()),
-                        songResponse.data().get(0).year(),
-                        songResponse.data().get(0).copyright())
-        );
+//        binding.description.setText(String.format("%s plays | %s | %s", convertPlayCount(songResponse.data().get(0).playCount()), songResponse.data().get(0).year(), songResponse.data().get(0).copyright()));
+        binding.description.setText(regexArtistNameExtractor(songResponse.data().get(0).artists().toString()));
+        Log.d("artistsTAG", regexArtistNameExtractor(songResponse.data().get(0).artists().toString()));
         List<SongResponse.Image> image = songResponse.data().get(0).image();
         IMAGE_URL = image.get(image.size() - 1).url();
         SHARE_URL = songResponse.data().get(0).url();
@@ -394,6 +478,22 @@ public class MusicOverviewActivity extends AppCompatActivity implements ActionPl
 //        }
 
         //binding.main.setBackgroundColor(ApplicationClass.IMAGE_BG_COLOR);
+    }
+
+    private String regexArtistNameExtractor(String value) {
+        String data = value;
+
+        Pattern pattern = Pattern.compile("name=([^,]+)");
+        Matcher matcher = pattern.matcher(data);
+
+        Set<String> artistNames = new LinkedHashSet<>();
+        while (matcher.find()) {
+            artistNames.add(matcher.group(1).trim());
+        }
+
+        String result = String.join(", ", artistNames);
+        System.out.println(result);
+        return result;// Output: Sachet-Parampara, Parampara Tandon, Kausar Munir
     }
 
     public void backPress(View view) {

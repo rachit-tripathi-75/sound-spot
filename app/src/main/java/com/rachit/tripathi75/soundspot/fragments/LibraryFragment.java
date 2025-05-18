@@ -30,12 +30,11 @@ import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 public class LibraryFragment extends Fragment {
 
     private FragmentLibraryBinding binding;
-    private Context context;
     SavedLibraries savedLibraries;
 
-    public LibraryFragment(Context context) {
+    public LibraryFragment() {
         // Required empty public constructor
-        this.context = context;
+
     }
 
 
@@ -45,12 +44,12 @@ public class LibraryFragment extends Fragment {
         binding = FragmentLibraryBinding.inflate(inflater, container, false);
 
 
-        binding.recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        binding.recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         OverScrollDecoratorHelper.setUpOverScroll(binding.recyclerView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 
         binding.addNewLibrary.setOnClickListener(view -> {
             AddNewLibraryBottomSheetBinding addNewLibraryBottomSheetBinding = AddNewLibraryBottomSheetBinding.inflate(getLayoutInflater());
-            BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(context, R.style.MyBottomSheetDialogTheme);
+            BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(requireContext(), R.style.MyBottomSheetDialogTheme);
             bottomSheetDialog.setContentView(addNewLibraryBottomSheetBinding.getRoot());
             addNewLibraryBottomSheetBinding.cancel.setOnClickListener(view1 -> {
                 bottomSheetDialog.dismiss();
@@ -76,7 +75,7 @@ public class LibraryFragment extends Fragment {
                         new ArrayList<>()
                 );
 
-                final SharedPreferenceManager sharedPreferenceManager = SharedPreferenceManager.getInstance(context);
+                final SharedPreferenceManager sharedPreferenceManager = SharedPreferenceManager.getInstance(requireContext());
                 sharedPreferenceManager.addLibraryToSavedLibraries(library);
                 Snackbar.make(binding.getRoot(), "Library added successfully", Snackbar.LENGTH_SHORT).show();
 
@@ -109,7 +108,7 @@ public class LibraryFragment extends Fragment {
     }
 
     private void showData() {
-        showData(SharedPreferenceManager.getInstance(context));
+        showData(SharedPreferenceManager.getInstance(requireContext()));
     }
 
 

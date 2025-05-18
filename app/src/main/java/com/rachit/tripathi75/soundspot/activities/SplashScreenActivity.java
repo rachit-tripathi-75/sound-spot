@@ -54,6 +54,11 @@ public class SplashScreenActivity extends AppCompatActivity {
             startActivity(new Intent(SplashScreenActivity.this, HostActivity.class));
         });
 
+        binding.tvContinueAsGuest.setOnClickListener(view -> {
+            startActivity(new Intent(this, HostActivity.class));
+            finish();
+        });
+
     }
 
     private void playSplashScreenVideo() {

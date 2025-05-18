@@ -36,10 +36,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_10sdp"
-        app:layout_constraintStart_toStartOf="parent"
+        android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:gravity="center">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:layout_width="@dimen/_40sdp"
@@ -49,12 +49,12 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="Sound Spot"
-            android:textSize="@dimen/_20ssp"
             android:alpha="0.5"
             android:fontFamily="@font/helveticaroman"
-            android:textColor="@color/white" />
+            android:gravity="center"
+            android:text="Sound Spot"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_20ssp" />
 
     </LinearLayout>
 
@@ -69,12 +69,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintVertical_bias="0.5">
 
+        <TextView
+            android:id="@+id/tvContinueAsGuest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="@font/helvetica"
+            android:text="Continue as guest"
+            android:textStyle="bold"
+            android:textColor="@color/white" />
+
         <Button
             android:id="@+id/btnLogin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/_20sdp"
-            android:layout_marginTop="@dimen/_20sdp"
+            android:layout_marginTop="@dimen/_10sdp"
             android:layout_marginEnd="@dimen/_20sdp"
             android:alpha="0.9"
             android:background="@drawable/login_button_background"
@@ -101,9 +111,9 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_marginBottom="@dimen/_10sdp"
             android:gravity="center"
-            android:layout_marginBottom="@dimen/_10sdp">
+            android:orientation="horizontal">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -115,13 +125,12 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:autoLink="web"
                 android:fontFamily="@font/helveticabold"
                 android:text=" terms and conditions"
-                android:textSize="@dimen/_10sdp"
-                android:autoLink="web"/>
+                android:textSize="@dimen/_10sdp" />
 
         </LinearLayout>
-
 
 
     </LinearLayout>

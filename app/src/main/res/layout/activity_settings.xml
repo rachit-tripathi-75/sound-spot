@@ -5,34 +5,34 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.SettingsActivity"
-    android:background="@color/background">
+    android:background="@color/background"
+    tools:context=".activities.SettingsActivity">
 
     <LinearLayout
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:padding="@dimen/_12sdp"
+        android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:padding="@dimen/_12sdp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:layout_width="@dimen/_30sdp"
             android:layout_height="@dimen/_30sdp"
-            android:src="@drawable/round_arrow_back_24"
             android:onClick="backPress"
+            android:src="@drawable/round_arrow_back_24"
             tools:ignore="UsingOnClickInXml" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingHorizontal="@dimen/_12sdp"
             android:text="Settings"
             android:textColor="@color/textMain"
-            android:textSize="@dimen/_18sdp"
-            android:paddingHorizontal="@dimen/_12sdp"/>
+            android:textSize="@dimen/_18sdp" />
 
     </LinearLayout>
 
@@ -41,9 +41,9 @@
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
         android:background="@color/textSec"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -51,110 +51,110 @@
         android:fillViewport="true"
         android:overScrollMode="never"
         android:scrollbars="none"
-        app:layout_constraintTop_toBottomOf="@id/divider"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/divider">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingVertical="@dimen/_8sdp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingVertical="@dimen/_8sdp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Data-saving and offline"
                 android:paddingHorizontal="@dimen/_12sdp"
                 android:paddingVertical="@dimen/_4sdp"
+                android:text="Data-saving and offline"
                 android:textColor="@color/textMain"
-                android:textStyle="bold"
-                android:textSize="@dimen/_14sdp"/>
+                android:textSize="@dimen/_14sdp"
+                android:textStyle="bold" />
 
             <com.rachit.tripathi75.soundspot.utils.customview.MaterialCustomSwitch
                 android:id="@+id/download_over_cellular"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:checked="true"
                 app:textHead="Downloads over cellular"
                 app:textOff="Download starts or continue only when you're connected to Wi-Fi."
-                app:textOn="Download starts or continue when you're connected to Wi-Fi or cellular."
-                app:checked="true"/>
+                app:textOn="Download starts or continue when you're connected to Wi-Fi or cellular." />
 
             <com.rachit.tripathi75.soundspot.utils.customview.MaterialCustomSwitch
                 android:id="@+id/high_quality_track"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:checked="true"
                 app:textHead="Stream tracks in high quality"
                 app:textOff="Stream tracks in low/medium quality when you're not connected to Wi-Fi."
-                app:textOn="Stream tracks in high quality when you're connected to Wi-Fi or cellular."
-                app:checked="true"/>
+                app:textOn="Stream tracks in high quality when you're connected to Wi-Fi or cellular." />
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.2dp"
                 android:layout_marginVertical="@dimen/_8sdp"
-                android:background="@color/textSec"/>
+                android:background="@color/textSec" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Storage"
                 android:paddingHorizontal="@dimen/_12sdp"
                 android:paddingVertical="@dimen/_4sdp"
+                android:text="Storage"
                 android:textColor="@color/textMain"
-                android:textStyle="bold"
-                android:textSize="@dimen/_14sdp"/>
+                android:textSize="@dimen/_14sdp"
+                android:textStyle="bold" />
 
             <com.rachit.tripathi75.soundspot.utils.customview.MaterialCustomSwitch
                 android:id="@+id/store_in_cache"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:checked="true"
                 app:textHead="Store Track &amp; Album Data"
                 app:textOff="Will not store any details to cache. More Data Consumption."
-                app:textOn="Will store data to cache. Less Data Consumption. Helps when API Server is down."
-                app:checked="true"/>
+                app:textOn="Will store data to cache. Less Data Consumption. Helps when API Server is down." />
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.2dp"
                 android:layout_marginVertical="@dimen/_8sdp"
-                android:background="@color/textSec"/>
+                android:background="@color/textSec" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Other"
                 android:paddingHorizontal="@dimen/_12sdp"
                 android:paddingVertical="@dimen/_4sdp"
+                android:text="Other"
                 android:textColor="@color/textMain"
-                android:textStyle="bold"
-                android:textSize="@dimen/_14sdp"/>
+                android:textSize="@dimen/_14sdp"
+                android:textStyle="bold" />
 
             <com.rachit.tripathi75.soundspot.utils.customview.MaterialCustomSwitch
                 android:id="@+id/explicit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:checked="true"
                 app:textHead="Allow explicit content"
                 app:textOff="No explicit content will be listed or played."
-                app:textOn="Explicit content (labelled as 18+) is playable."
-                app:checked="true"/>
+                app:textOn="Explicit content (labelled as 18+) is playable." />
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.2dp"
                 android:layout_marginVertical="@dimen/_8sdp"
-                android:background="@color/textSec"/>
+                android:background="@color/textSec" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Theme"
                 android:paddingHorizontal="@dimen/_12sdp"
                 android:paddingVertical="@dimen/_4sdp"
+                android:text="Theme"
                 android:textColor="@color/textMain"
-                android:textStyle="bold"
-                android:textSize="@dimen/_14sdp"/>
+                android:textSize="@dimen/_14sdp"
+                android:textStyle="bold" />
 
             <RadioGroup
                 android:id="@+id/theme_chip_group"
@@ -181,6 +181,7 @@
                     android:text="Follow System" />
 
             </RadioGroup>
+
 
         </LinearLayout>
 

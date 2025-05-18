@@ -367,10 +367,20 @@ public class ListActivity extends AppCompatActivity {
             startActivity(sendIntent);
         });
 
+//        for (SongResponse.Artist artist : albumSearch.data().artist().all()) {
+//            artistData.add(new ArtistData(artist.name(), artist.id(),
+//                    (!artist.image().isEmpty()) ? artist.image().get(artist.image().size() - 1).url()
+//                            : artist.image().get(0).url()
+//            ));
+//        }
+
         for (SongResponse.Artist artist : albumSearch.data().artist().all()) {
-            artistData.add(new ArtistData(artist.name(), artist.id(),
-                    (!artist.image().isEmpty()) ? artist.image().get(artist.image().size() - 1).url()
-                            : artist.image().get(0).url()
+            artistData.add(new ArtistData(
+                    artist.name(),
+                    artist.id(),
+                    (!artist.image().isEmpty())
+                            ? artist.image().get(artist.image().size() - 1).url()
+                            : null // or a placeholder image URL if needed
             ));
         }
     }

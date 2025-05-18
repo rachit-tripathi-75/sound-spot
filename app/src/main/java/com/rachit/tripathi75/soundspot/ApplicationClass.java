@@ -27,9 +27,16 @@ import androidx.palette.graphics.Palette;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
+import com.rachit.tripathi75.soundspot.activities.AboutActivity;
+import com.rachit.tripathi75.soundspot.activities.HostActivity;
 import com.rachit.tripathi75.soundspot.activities.MusicOverviewActivity;
 import com.rachit.tripathi75.soundspot.activities.SettingsActivity;
+import com.rachit.tripathi75.soundspot.activities.SplashScreenActivity;
+import com.rachit.tripathi75.soundspot.classes.PrefsManager;
 import com.rachit.tripathi75.soundspot.network.ApiManager;
 import com.rachit.tripathi75.soundspot.network.utility.RequestNetwork;
 import com.rachit.tripathi75.soundspot.records.SongResponse;
@@ -67,6 +74,8 @@ public class ApplicationClass extends Application {
     public static int TEXT_ON_IMAGE_COLOR1 = IMAGE_BG_COLOR ^ 0x00FFFFFF;
     private static Activity currentActivity = null;
 
+    private static FirebaseAuth firebaseAuth;
+
     public static Activity getCurrentActivity() {
         return currentActivity;
     }
@@ -89,13 +98,36 @@ public class ApplicationClass extends Application {
         createNotificationChannel();
         sharedPreferenceManager = SharedPreferenceManager.getInstance(this);
         TRACK_QUALITY = sharedPreferenceManager.getTrackQuality();
+        firebaseAuth = FirebaseAuth.getInstance();
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        AppEventsLogger.activateApp(this);
 
+        if (PrefsManager.getSession(this)) {
+            Intent intent = new Intent(this, HostActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        } else {
+            Intent intent = new Intent(this, SplashScreenActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }
+
+
+
+
+    }
+
+    public static FirebaseAuth getFirebaseAuth() {
+        return firebaseAuth;
     }
 
     public static void updateTheme(){
         SettingsActivity.SettingsSharedPrefManager settingsSharedPrefManager = new SettingsActivity.SettingsSharedPrefManager(getCurrentActivity());
-        final String theme = settingsSharedPrefManager.getTheme();
-        AppCompatDelegate.setDefaultNightMode(theme.equals("dark")?AppCompatDelegate.MODE_NIGHT_YES:theme.equals("light")?AppCompatDelegate.MODE_NIGHT_NO:AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+//        final String theme = settingsSharedPrefManager.getTheme();
+        settingsSharedPrefManager.setTheme("dark");
+//        AppCompatDelegate.setDefaultNightMode(theme.equals("dark")?AppCompatDelegate.MODE_NIGHT_YES:theme.equals("light")?AppCompatDelegate.MODE_NIGHT_YES:AppCompatDelegate.MODE_NIGHT_YES);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+
     }
 
     private void createNotificationChannel() {
@@ -173,7 +205,7 @@ public class ApplicationClass extends Application {
                                     });
 
                             Notification notification = new androidx.core.app.NotificationCompat.Builder(ApplicationClass.this, CHANNEL_ID_1)
-                                    .setSmallIcon(R.drawable.headphone)
+                                    .setSmallIcon(R.drawable.soundspotapplogo)
                                     .setLargeIcon(resource)
                                     .setContentTitle(MUSIC_TITLE)
                                     .setOngoing(playPauseButton != R.drawable.play_arrow_24px)

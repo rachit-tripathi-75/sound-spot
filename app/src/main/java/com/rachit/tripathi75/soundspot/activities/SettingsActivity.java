@@ -34,6 +34,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         binding.themeChipGroup.setOnCheckedChangeListener((group, checkedId) -> {
             settingsSharedPrefManager.setTheme(checkedId == R.id.dark ? "dark" : checkedId == R.id.light ? "light" : "system");
+            settingsSharedPrefManager.setTheme("dark");
             ApplicationClass.updateTheme();
         });
 
