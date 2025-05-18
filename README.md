@@ -1,5 +1,7 @@
 # SoundSpot
 
+[NOTE!!! This application is for educational and learning purpose only. This app's author is not responsible for any commercial purpose, made by any contributoer, or distribution to create piracy. The Author of this app made this app for educational purpose only and doesn't endorses privacy and Intellectual Property Rights of Artists. THANK YOU!!]
+
 Introducing SoundSpot – Your Ultimate Music Streaming Experience! 🎵
 
 SoundSpot is a feature-packed music streaming app inspired by Spotify, designed to bring you endless music at your fingertips. Powered by the unofficial JioSaavn API, SoundSpot lets you:
@@ -30,8 +32,7 @@ With SoundSpot, music is more than just listening—it's an experience. Start yo
 * Search for Albums
 * Search for Playlists
 * Doesn't collect any user data
-* much more...
-  [NOTE!!! This application is for educational and learning purpose only. This app's author is not responsible for any commercial purpose, made by any contributoer, or distribution to create piracy. The Author of this app made this app for educational purpose only and doesn't endorses privacy and Intellectual Property Rights of Artists. THANK YOU!!]
+  
 
 ## Screenshots
 
