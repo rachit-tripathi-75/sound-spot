@@ -1,179 +1,416 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/background"
     tools:context=".activities.ArtistProfileActivity">
 
 
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:background="@color/background_dark"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
+
         <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/collapsing_toolbar_appbarlayout"
+            android:id="@+id/appBarLayout"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_250sdp"
-            android:background="@color/background">
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:fitsSystemWindows="true"
+            app:elevation="0dp">
 
             <com.google.android.material.appbar.CollapsingToolbarLayout
-                android:id="@+id/collapsing_toolbar_layout"
+                android:id="@+id/collapsingToolbar"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="400dp"
                 android:fitsSystemWindows="true"
-                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                app:contentScrim="@color/background"
-                app:expandedTitleTextAppearance="@style/TransparentText"
+                app:contentScrim="@color/background_dark"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
                 <ImageView
-                    android:id="@+id/artist_img"
+                    android:id="@+id/ivArtist"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_250sdp"
+                    android:layout_height="match_parent"
+                    android:contentDescription="artist image"
+                    android:fitsSystemWindows="true"
                     android:scaleType="centerCrop"
+                    android:src="@drawable/dualipa"
                     app:layout_collapseMode="parallax" />
 
-                <LinearLayout
+                <View
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:background="#4D121212"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/artist_name"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/avenir_next_regular"
-                        android:paddingHorizontal="@dimen/_25sdp"
-                        android:paddingVertical="@dimen/_6sdp"
-                        android:text="@string/app_name"
-                        android:textSize="@dimen/_30ssp"
-                        android:textStyle="bold" />
-
-                </LinearLayout>
+                    android:layout_height="match_parent"
+                    android:background="@drawable/gradient_scrim"
+                    app:layout_collapseMode="parallax" />
 
                 <androidx.appcompat.widget.Toolbar
-                    android:id="@+id/collapsing_toolbar"
+                    android:id="@+id/toolbar"
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
-                    android:layout_marginTop="@dimen/_18sdp"
-                    android:fitsSystemWindows="true"
-                    app:layout_collapseMode="pin"
-                    app:title="" />
+                    android:background="@android:color/transparent"
+                    app:layout_collapseMode="pin">
 
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/backButton"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_gravity="center_vertical"
+                            app:cardBackgroundColor="#80000000"
+                            app:cardCornerRadius="20dp"
+                            app:cardElevation="0dp">
+
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_gravity="center"
+                                android:contentDescription="Back"
+                                android:src="@drawable/ic_back" />
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1" />
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/searchButton"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginEnd="8dp"
+                            app:cardBackgroundColor="#80000000"
+                            app:cardCornerRadius="20dp"
+                            app:cardElevation="0dp">
+
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_gravity="center"
+                                android:contentDescription="Search"
+                                android:src="@drawable/search" />
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/menuButton"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_gravity="center_vertical"
+                            app:cardBackgroundColor="#80000000"
+                            app:cardCornerRadius="20dp"
+                            app:cardElevation="0dp">
+
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_gravity="center"
+                                android:contentDescription="Menu"
+                                android:src="@drawable/ic_more" />
+                        </com.google.android.material.card.MaterialCardView>
+                    </LinearLayout>
+                </androidx.appcompat.widget.Toolbar>
             </com.google.android.material.appbar.CollapsingToolbarLayout>
-
         </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fillViewport="true"
+            android:clipToPadding="false"
+            android:overScrollMode="never"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingVertical="@dimen/_12sdp">
+                android:paddingHorizontal="16dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="80dp">
+
+                <TextView
+                    android:id="@+id/artistName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Artist name"
+                    android:textColor="@color/white"
+                    android:textSize="32sp"
+                    android:textStyle="bold"
+                    android:transitionName="artist_name" />
+
+                <TextView
+                    android:id="@+id/monthlyListeners"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Monthly Listeners"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingHorizontal="@dimen/_8sdp">
+                    android:layout_marginTop="24dp"
+                    android:orientation="horizontal">
 
-                    <TextView
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/followButton"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="48dp"
+                        android:layout_marginEnd="8dp"
                         android:layout_weight="1"
-                        android:text="Top Songs"
-                        android:textSize="@dimen/_18ssp"
-                        android:textStyle="bold" />
+                        android:backgroundTint="@color/white"
+                        android:text="Follow"
+                        android:textColor="@color/black"
+                        app:cornerRadius="24dp" />
 
-                    <TextView
-                        android:id="@+id/top_songs_see_more"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="see more"
-                        android:textColor="@color/spotify_green"
-                        android:textStyle="bold" />
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/shuffleButton"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginEnd="8dp"
+                        app:cardBackgroundColor="@color/background_light"
+                        app:cardCornerRadius="24dp"
+                        app:cardElevation="0dp">
 
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="center"
+                            android:contentDescription="Shuffle"
+                            android:src="@drawable/ic_shuffle"
+                            android:tint="@color/black" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/playButton"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:backgroundTint="@color/accent_red"
+                        android:contentDescription="Play"
+                        app:fabCustomSize="48dp"
+                        app:maxImageSize="24dp"
+                        app:srcCompat="@drawable/ic_play"
+                        app:tint="@color/white" />
                 </LinearLayout>
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/top_songs_recyclerview"
+                <com.google.android.material.tabs.TabLayout
+                    android:id="@+id/tabLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:overScrollMode="never"
-                    android:scrollbars="none"
-                    tools:itemCount="5"
-                    tools:listitem="@layout/activity_artist_profile_view_top_songs_item" />
+                    android:layout_marginTop="24dp"
+                    android:background="@android:color/transparent"
+                    app:tabGravity="start"
+                    app:tabIndicatorColor="@color/white"
+                    app:tabMode="scrollable"
+                    app:tabSelectedTextColor="@color/white"
+                    app:tabTextColor="@color/text_secondary">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingHorizontal="@dimen/_8sdp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Top Albums"
-                        android:textSize="@dimen/_18ssp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/top_albums_see_more"
+                    <com.google.android.material.tabs.TabItem
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="see more"
-                        android:textColor="@color/spotify_green"
-                        android:textStyle="bold" />
+                        android:text="" />
 
-                </LinearLayout>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/top_albums_recyclerview"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:overScrollMode="never"
-                    android:scrollbars="none"
-                    tools:itemCount="5"
-                    tools:listitem="@layout/activity_artist_profile_view_top_songs_item" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingHorizontal="@dimen/_8sdp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Top Singles"
-                        android:textSize="@dimen/_18ssp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/top_singles_see_more"
+                    <com.google.android.material.tabs.TabItem
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="see more"
-                        android:textColor="@color/spotify_green"
-                        android:textStyle="bold" />
+                        android:text="" />
 
-                </LinearLayout>
+                    <com.google.android.material.tabs.TabItem
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/top_singles_recyclerview"
+                    <com.google.android.material.tabs.TabItem
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="" />
+                </com.google.android.material.tabs.TabLayout>
+
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/viewPager"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:overScrollMode="never"
-                    android:scrollbars="none"
-                    tools:itemCount="5"
-                    tools:listitem="@layout/activity_artist_profile_view_top_songs_item" />
-
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="16dp" />
             </LinearLayout>
-
         </androidx.core.widget.NestedScrollView>
+
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
+    <!--        <com.google.android.material.appbar.AppBarLayout-->
+    <!--            android:id="@+id/collapsing_toolbar_appbarlayout"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="@dimen/_250sdp"-->
+    <!--            android:background="@color/background">-->
+
+    <!--            <com.google.android.material.appbar.CollapsingToolbarLayout-->
+    <!--                android:id="@+id/collapsing_toolbar_layout"-->
+    <!--                android:layout_width="match_parent"-->
+    <!--                android:layout_height="match_parent"-->
+    <!--                android:fitsSystemWindows="true"-->
+    <!--                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"-->
+    <!--                app:contentScrim="@color/background"-->
+    <!--                app:expandedTitleTextAppearance="@style/TransparentText"-->
+    <!--                app:layout_scrollFlags="scroll|exitUntilCollapsed">-->
+
+    <!--                <ImageView-->
+    <!--                    android:id="@+id/artist_img"-->
+    <!--                    android:layout_width="match_parent"-->
+    <!--                    android:layout_height="@dimen/_250sdp"-->
+    <!--                    android:scaleType="centerCrop"-->
+    <!--                    app:layout_collapseMode="parallax" />-->
+
+    <!--                <LinearLayout-->
+    <!--                    android:layout_width="match_parent"-->
+    <!--                    android:layout_height="wrap_content"-->
+    <!--                    android:layout_gravity="bottom"-->
+    <!--                    android:background="#4D121212"-->
+    <!--                    android:orientation="vertical">-->
+
+    <!--                    <TextView-->
+    <!--                        android:id="@+id/artist_name"-->
+    <!--                        android:layout_width="match_parent"-->
+    <!--                        android:layout_height="wrap_content"-->
+    <!--                        android:fontFamily="@font/avenir_next_regular"-->
+    <!--                        android:paddingHorizontal="@dimen/_25sdp"-->
+    <!--                        android:paddingVertical="@dimen/_6sdp"-->
+    <!--                        android:text="@string/app_name"-->
+    <!--                        android:textSize="@dimen/_30ssp"-->
+    <!--                        android:textStyle="bold" />-->
+
+    <!--                </LinearLayout>-->
+
+    <!--                <androidx.appcompat.widget.Toolbar-->
+    <!--                    android:id="@+id/collapsing_toolbar"-->
+    <!--                    android:layout_width="match_parent"-->
+    <!--                    android:layout_height="?attr/actionBarSize"-->
+    <!--                    android:layout_marginTop="@dimen/_18sdp"-->
+    <!--                    android:fitsSystemWindows="true"-->
+    <!--                    app:layout_collapseMode="pin"-->
+    <!--                    app:title="" />-->
+
+    <!--            </com.google.android.material.appbar.CollapsingToolbarLayout>-->
+
+    <!--        </com.google.android.material.appbar.AppBarLayout>-->
+
+    <!--        <androidx.core.widget.NestedScrollView-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="match_parent"-->
+    <!--            android:fillViewport="true"-->
+    <!--            app:layout_behavior="@string/appbar_scrolling_view_behavior">-->
+
+    <!--            <LinearLayout-->
+    <!--                android:layout_width="match_parent"-->
+    <!--                android:layout_height="match_parent"-->
+    <!--                android:orientation="vertical"-->
+    <!--                android:paddingVertical="@dimen/_12sdp">-->
+
+    <!--                <LinearLayout-->
+    <!--                    android:layout_width="match_parent"-->
+    <!--                    android:layout_height="wrap_content"-->
+    <!--                    android:paddingHorizontal="@dimen/_8sdp">-->
+
+    <!--                    <TextView-->
+    <!--                        android:layout_width="0dp"-->
+    <!--                        android:layout_height="wrap_content"-->
+    <!--                        android:layout_weight="1"-->
+    <!--                        android:text="Top Songs"-->
+    <!--                        android:textSize="@dimen/_18ssp"-->
+    <!--                        android:textStyle="bold" />-->
+
+    <!--                    <TextView-->
+    <!--                        android:id="@+id/top_songs_see_more"-->
+    <!--                        android:layout_width="wrap_content"-->
+    <!--                        android:layout_height="wrap_content"-->
+    <!--                        android:text="see more"-->
+    <!--                        android:textColor="@color/spotify_green"-->
+    <!--                        android:textStyle="bold" />-->
+
+    <!--                </LinearLayout>-->
+
+    <!--                <androidx.recyclerview.widget.RecyclerView-->
+    <!--                    android:id="@+id/top_songs_recyclerview"-->
+    <!--                    android:layout_width="match_parent"-->
+    <!--                    android:layout_height="wrap_content"-->
+    <!--                    android:overScrollMode="never"-->
+    <!--                    android:scrollbars="none"-->
+    <!--                    tools:itemCount="5"-->
+    <!--                    tools:listitem="@layout/activity_artist_profile_view_top_songs_item" />-->
+
+    <!--                <LinearLayout-->
+    <!--                    android:layout_width="match_parent"-->
+    <!--                    android:layout_height="wrap_content"-->
+    <!--                    android:paddingHorizontal="@dimen/_8sdp">-->
+
+    <!--                    <TextView-->
+    <!--                        android:layout_width="0dp"-->
+    <!--                        android:layout_height="wrap_content"-->
+    <!--                        android:layout_weight="1"-->
+    <!--                        android:text="Top Albums"-->
+    <!--                        android:textSize="@dimen/_18ssp"-->
+    <!--                        android:textStyle="bold" />-->
+
+    <!--                    <TextView-->
+    <!--                        android:id="@+id/top_albums_see_more"-->
+    <!--                        android:layout_width="wrap_content"-->
+    <!--                        android:layout_height="wrap_content"-->
+    <!--                        android:text="see more"-->
+    <!--                        android:textColor="@color/spotify_green"-->
+    <!--                        android:textStyle="bold" />-->
+
+    <!--                </LinearLayout>-->
+
+    <!--                <androidx.recyclerview.widget.RecyclerView-->
+    <!--                    android:id="@+id/top_albums_recyclerview"-->
+    <!--                    android:layout_width="match_parent"-->
+    <!--                    android:layout_height="wrap_content"-->
+    <!--                    android:overScrollMode="never"-->
+    <!--                    android:scrollbars="none"-->
+    <!--                    tools:itemCount="5"-->
+    <!--                    tools:listitem="@layout/activity_artist_profile_view_top_songs_item" />-->
+
+    <!--                <LinearLayout-->
+    <!--                    android:layout_width="match_parent"-->
+    <!--                    android:layout_height="wrap_content"-->
+    <!--                    android:paddingHorizontal="@dimen/_8sdp">-->
+
+    <!--                    <TextView-->
+    <!--                        android:layout_width="0dp"-->
+    <!--                        android:layout_height="wrap_content"-->
+    <!--                        android:layout_weight="1"-->
+    <!--                        android:text="Top Singles"-->
+    <!--                        android:textSize="@dimen/_18ssp"-->
+    <!--                        android:textStyle="bold" />-->
+
+    <!--                    <TextView-->
+    <!--                        android:id="@+id/top_singles_see_more"-->
+    <!--                        android:layout_width="wrap_content"-->
+    <!--                        android:layout_height="wrap_content"-->
+    <!--                        android:text="see more"-->
+    <!--                        android:textColor="@color/spotify_green"-->
+    <!--                        android:textStyle="bold" />-->
+
+    <!--                </LinearLayout>-->
+
+    <!--                <androidx.recyclerview.widget.RecyclerView-->
+    <!--                    android:id="@+id/top_singles_recyclerview"-->
+    <!--                    android:layout_width="match_parent"-->
+    <!--                    android:layout_height="wrap_content"-->
+    <!--                    android:overScrollMode="never"-->
+    <!--                    android:scrollbars="none"-->
+    <!--                    tools:itemCount="5"-->
+    <!--                    tools:listitem="@layout/activity_artist_profile_view_top_songs_item" />-->
+
+    <!--            </LinearLayout>-->
+
+    <!--        </androidx.core.widget.NestedScrollView>-->
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

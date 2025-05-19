@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 import com.rachit.tripathi75.soundspot.R;
 import com.rachit.tripathi75.soundspot.activities.ListActivity;
 import com.rachit.tripathi75.soundspot.databinding.ActivityArtistProfileViewTopSongsItemBinding;
+import com.rachit.tripathi75.soundspot.databinding.ItemAlbumsBinding;
 import com.rachit.tripathi75.soundspot.model.AlbumItem;
 import com.rachit.tripathi75.soundspot.records.AlbumsSearch;
 import com.squareup.picasso.Picasso;
@@ -21,17 +22,17 @@ import java.util.List;
 
 public class ActivityArtistProfileTopAlbumsAdapter extends RecyclerView.Adapter<ActivityArtistProfileTopAlbumsAdapter.ViewHolder> {
 
-    private final List<AlbumsSearch.Data.Results> data;
+    private final List<AlbumsSearch.Data.Results> albums;
 
-    public ActivityArtistProfileTopAlbumsAdapter(List<AlbumsSearch.Data.Results> data) {
-        this.data = data;
+    public ActivityArtistProfileTopAlbumsAdapter(List<AlbumsSearch.Data.Results> albums) {
+        this.albums = albums;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View _v = View.inflate(parent.getContext(), viewType == 1 ? R.layout.activity_artist_profile_view_top_songs_item : R.layout.artist_profile_view_top_songs_shimmer, null);
-        _v.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        View _v = View.inflate(parent.getContext(), viewType == 1 ? R.layout.item_albums : R.layout.artist_profile_view_top_songs_shimmer, null);
+
         return new ViewHolder(_v);
     }
 
@@ -42,37 +43,37 @@ public class ActivityArtistProfileTopAlbumsAdapter extends RecyclerView.Adapter<
             return;
         }
 
-        final ActivityArtistProfileViewTopSongsItemBinding itemView = ActivityArtistProfileViewTopSongsItemBinding.bind(holder.itemView);
+        final ItemAlbumsBinding binding = ItemAlbumsBinding.bind(holder.itemView);
 
-        itemView.position.setText(String.valueOf(position + 1));
-        itemView.coverTitle.setText(data.get(position).name());
-        itemView.coverPlayed.setText(
-                String.format("%s | %s", data.get(position).year(), data.get(position).language())
+//        itemView.position.setText(String.valueOf(position + 1));
+        binding.tvAlbumTitle.setText(albums.get(position).name());
+        binding.tvAlbumInformation.setText(
+                String.format("%s | %s", albums.get(position).year(), albums.get(position).language())
         );
-        Picasso.get().load(Uri.parse(data.get(position).image().get(data.get(position).image().size() - 1).url())).into(itemView.coverImage);
+        Picasso.get().load(Uri.parse(albums.get(position).image().get(albums.get(position).image().size() - 1).url())).into(binding.ivAlbumArt);
 
         holder.itemView.setOnClickListener(view -> {
             AlbumItem albumItem = new AlbumItem(
-                    data.get(position).id(),
-                    data.get(position).name(),
-                    data.get(position).image().get(data.get(position).image().size() - 1).url(),
-                    data.get(position).id()
+                    albums.get(position).id(),
+                    albums.get(position).name(),
+                    albums.get(position).image().get(albums.get(position).image().size() - 1).url(),
+                    albums.get(position).id()
             );
             holder.itemView.getContext().startActivity(new Intent(holder.itemView.getContext(), ListActivity.class)
                     .putExtra("data", new Gson().toJson(albumItem))
                     .putExtra("type", "album")
-                    .putExtra("id", data.get(position).id()));
+                    .putExtra("id", albums.get(position).id()));
         });
     }
 
     @Override
     public int getItemCount() {
-        return data.size();
+        return albums.size();
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (data.get(position).id().equals("<shimmer>")) return 0;
+        if (albums.get(position).id().equals("<shimmer>")) return 0;
         else return 1;
     }
 

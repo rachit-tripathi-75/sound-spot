@@ -87,6 +87,8 @@
                 android:fontFamily="@font/helvetica"
                 android:maxLines="1"
                 android:text="The Weeknd"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
                 android:textColor="#CCCCCC"
                 android:textSize="@dimen/_10ssp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -279,6 +281,118 @@
                 app:tint="@color/white" />
         </LinearLayout>
 
+
+        <LinearLayout
+            android:id="@+id/bottom_tabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/black"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="@dimen/_10sdp"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="@drawable/music_overview_bottom_btn_background"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingTop="@dimen/_8sdp"
+                android:paddingBottom="@dimen/_8sdp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="invisible"
+                    android:src="@drawable/ic_lyrics" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_marginEnd="@dimen/_5sdp"
+                    android:text="Lyrics"
+                    android:fontFamily="@font/helveticabold"
+                    android:textStyle="bold"
+                    android:textColor="@color/gray_400"
+                    android:textSize="@dimen/_12ssp" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/music_overview_bottom_btn_background"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingTop="@dimen/_8sdp"
+                android:paddingBottom="@dimen/_8sdp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="invisible"
+                    android:src="@drawable/ic_queue" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_marginEnd="@dimen/_5sdp"
+                    android:text="Queue"
+                    android:fontFamily="@font/helveticabold"
+                    android:textStyle="bold"
+                    android:textColor="@color/gray_400"
+                    android:textSize="@dimen/_12ssp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/music_overview_bottom_btn_background"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingTop="@dimen/_8sdp"
+                android:paddingBottom="@dimen/_8sdp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="invisible"
+                    android:src="@drawable/ic_relevant" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_marginEnd="@dimen/_5sdp"
+                    android:text="Relevant"
+                    android:fontFamily="@font/helveticabold"
+                    android:textStyle="bold"
+                    android:textColor="@color/gray_400"
+                    android:textSize="@dimen/_12ssp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/tab_content_container"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/black"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/bottom_tabs"
+            app:layout_constraintHeight_percent="0.4" />
+
+
         <!-- Volume Control (Hidden by default) -->
         <androidx.cardview.widget.CardView
             android:id="@+id/volumeControlContainer"
@@ -286,21 +400,13 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
             android:layout_marginBottom="24dp"
-            android:visibility="gone"
+            android:visibility="visible"
             app:cardBackgroundColor="#33000000"
             app:cardCornerRadius="16dp"
             app:cardElevation="0dp"
             app:layout_constraintBottom_toBottomOf="parent">
 
-            <SeekBar
-                android:id="@+id/volumeSeekBar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:max="100"
-                android:progress="80"
-                android:progressDrawable="@drawable/volume_seekbar"
-                android:thumb="@drawable/seekbar_thumb" />
+
         </androidx.cardview.widget.CardView>
 
         <!-- Volume Button -->
@@ -313,6 +419,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Volume"
             android:src="@drawable/ic_volume"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
     </androidx.constraintlayout.motion.widget.MotionLayout>

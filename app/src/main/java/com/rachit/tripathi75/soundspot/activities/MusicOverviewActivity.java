@@ -88,6 +88,8 @@ public class MusicOverviewActivity extends AppCompatActivity implements ActionPl
         binding.title.setSelected(true);
         binding.description.setSelected(true);
 
+
+
         if (!(((ApplicationClass) getApplicationContext()).getTrackQueue().size() > 1))
             binding.shuffleIcon.setVisibility(View.VISIBLE);
 
@@ -292,7 +294,7 @@ public class MusicOverviewActivity extends AppCompatActivity implements ActionPl
         binding.vvSnip.setPlayer(player);
 
         // Load video from raw folder
-        Uri videoUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.laalpari);
+        Uri videoUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.vibe);
         MediaItem mediaItem = MediaItem.fromUri(videoUri);
         player.setMediaItem(mediaItem);
 

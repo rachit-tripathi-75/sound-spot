@@ -102,15 +102,15 @@ public class ApplicationClass extends Application {
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
 
-        if (PrefsManager.getSession(this)) {
-            Intent intent = new Intent(this, HostActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-        } else {
-            Intent intent = new Intent(this, SplashScreenActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-        }
+//        if (PrefsManager.getSession(this)) {
+//            Intent intent = new Intent(this, HostActivity.class);
+//            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            startActivity(intent);
+//        } else {
+//            Intent intent = new Intent(this, SplashScreenActivity.class);
+//            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            startActivity(intent);
+//        }
 
 
 

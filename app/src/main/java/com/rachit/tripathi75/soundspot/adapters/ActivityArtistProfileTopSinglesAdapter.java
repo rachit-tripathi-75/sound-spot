@@ -12,17 +12,18 @@ import com.facebook.shimmer.ShimmerFrameLayout;
 import com.rachit.tripathi75.soundspot.R;
 import com.rachit.tripathi75.soundspot.activities.MusicOverviewActivity;
 import com.rachit.tripathi75.soundspot.databinding.ItemSongBinding;
+import com.rachit.tripathi75.soundspot.records.AlbumsSearch;
 import com.rachit.tripathi75.soundspot.records.SongResponse;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-public class ActivityArtistProfileTopSongsAdapter extends RecyclerView.Adapter<ActivityArtistProfileTopSongsAdapter.ViewHolder> {
+public class ActivityArtistProfileTopSinglesAdapter extends RecyclerView.Adapter<ActivityArtistProfileTopSinglesAdapter.ViewHolder> {
 
-    private final List<SongResponse.Song> songs;
+    private final List<AlbumsSearch.Data.Results> singles;
 
-    public ActivityArtistProfileTopSongsAdapter(List<SongResponse.Song> songs) {
-        this.songs = songs;
+    public ActivityArtistProfileTopSinglesAdapter(List<AlbumsSearch.Data.Results> singles) {
+        this.singles = singles;
     }
 
     @NonNull
@@ -43,25 +44,25 @@ public class ActivityArtistProfileTopSongsAdapter extends RecyclerView.Adapter<A
         final ItemSongBinding binding = ItemSongBinding.bind(holder.itemView);
 
         binding.songNumber.setText(String.valueOf(position + 1));
-        binding.songTitle.setText(songs.get(position).name());
+        binding.songTitle.setText(singles.get(position).name());
         binding.songInfo.setText(
-                String.format("%s | %s", songs.get(position).year(), songs.get(position).label())
+                String.format("%s", singles.get(position).year())
         );
-        Picasso.get().load(Uri.parse(songs.get(position).image().get(songs.get(position).image().size() - 1).url())).into(binding.songCover);
+        Picasso.get().load(Uri.parse(singles.get(position).image().get(singles.get(position).image().size() - 1).url())).into(binding.songCover);
 
         holder.itemView.setOnClickListener(view -> {
-            view.getContext().startActivity(new Intent(view.getContext(), MusicOverviewActivity.class).putExtra("id", songs.get(position).id()));
+            view.getContext().startActivity(new Intent(view.getContext(), MusicOverviewActivity.class).putExtra("id", singles.get(position).id()));
         });
     }
 
     @Override
     public int getItemCount() {
-        return songs.size();
+        return singles.size();
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (songs.get(position).id().equals("<shimmer>")) return 0;
+        if (singles.get(position).id().equals("<shimmer>")) return 0;
         else return 1;
     }
 

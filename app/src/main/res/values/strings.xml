@@ -8,4 +8,22 @@
     <string name="facebook_app_id">1701849100726163</string>
     <string name="fb_login_protocol_scheme">fb1701849100726163</string>
 
+
+    <string name="artist_name">Dua Lipa</string>
+    <string name="monthly_listeners">98,789,451 monthly listeners</string>
+    <string name="follow">Follow</string>
+    <string name="following">Following</string>
+    <string name="shuffle">Shuffle</string>
+    <string name="play">Play</string>
+    <string name="back">Back</string>
+    <string name="search">Search</string>
+    <string name="menu">Menu</string>
+    <string name="artist_image">Artist Image</string>
+    <string name="top_10">Top 10</string>
+    <string name="clips">Clips</string>
+    <string name="singles">Singles</string>
+    <string name="albums">Albums</string>
+    <string name="song_cover">Song Cover</string>
+    <string name="more_options">More Options</string>
+
 </resources>
