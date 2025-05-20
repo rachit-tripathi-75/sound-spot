@@ -2,6 +2,7 @@ package com.rachit.tripathi75.soundspot.classes;
 
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.rachit.tripathi75.soundspot.R;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -40,7 +42,8 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.Playli
         Playlist playlist = playlists.get(position);
         holder.playlistTitle.setText(playlist.getTitle());
         holder.playlistArtist.setText(playlist.getArtist());
-        holder.playlistImage.setImageResource(playlist.getImageResourceId());
+        Picasso.get().load(Uri.parse(playlist.getAlbumArtUrl())).into(holder.playlistImage);
+//        holder.playlistImage.setImageResource(playlist.getImageResourceId());
 
         // Apply animation to individual items
         setAnimation(holder.itemView, position);

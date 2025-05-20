@@ -30,7 +30,7 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <ImageView
-            android:id="@+id/album_art"
+            android:id="@+id/ivPlayBarAlbumArt"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:scaleType="centerCrop"
@@ -47,28 +47,31 @@
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/player_controls"
-            app:layout_constraintStart_toEndOf="@id/album_art"
+            app:layout_constraintStart_toEndOf="@id/ivPlayBarAlbumArt"
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                android:id="@+id/song_title"
+                android:id="@+id/tvPlayBarMusicTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:maxLines="1"
+                android:textStyle="bold"
+                android:fontFamily="@font/helvetica"
                 android:text="Until I Bleed Out"
                 android:textColor="@color/white"
-                android:textSize="14sp" />
+                android:textSize="@dimen/_12ssp" />
 
             <TextView
-                android:id="@+id/artist_name"
+                android:id="@+id/tvPlayBarArtistName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:maxLines="1"
+                android:textStyle="bold"
                 android:text="The Weeknd"
                 android:textColor="@color/gray"
-                android:textSize="12sp" />
+                android:textSize="@dimen/_10ssp" />
         </LinearLayout>
 
         <LinearLayout
@@ -82,7 +85,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageButton
-                android:id="@+id/btn_previous"
+                android:id="@+id/ibPlayBarPreviousIcon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
@@ -90,7 +93,7 @@
                 app:tint="@color/white" />
 
             <ImageButton
-                android:id="@+id/btn_play_pause"
+                android:id="@+id/ibPlayBarPlayPauseIcon"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_marginHorizontal="8dp"
@@ -99,7 +102,7 @@
                 app:tint="@color/black" />
 
             <ImageButton
-                android:id="@+id/btn_next"
+                android:id="@+id/ibPlayBarNextIcon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:background="?attr/selectableItemBackgroundBorderless"

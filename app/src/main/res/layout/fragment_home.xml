@@ -60,7 +60,7 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageButton
-                    android:id="@+id/btn_search"
+                    android:id="@+id/ibSearch"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
                     android:layout_marginEnd="12dp"
@@ -69,7 +69,7 @@
                     app:tint="@color/white" />
 
                 <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/profile_icon"
+                    android:id="@+id/ivProfilePic"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
                     android:padding="@dimen/_2sdp"
@@ -122,7 +122,7 @@
                     </LinearLayout>
 
                     <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rv_artists"
+                        android:id="@+id/rvFollowedArtists"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
@@ -166,7 +166,7 @@
                     </LinearLayout>
 
                     <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rv_playlists"
+                        android:id="@+id/rvPlaylists"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"

@@ -4,12 +4,12 @@ package com.rachit.tripathi75.soundspot.classes;
 public class Playlist {
     private String title;
     private String artist;
-    private int imageResourceId;
+    private String albumArtUrl;
 
-    public Playlist(String title, String artist, int imageResourceId) {
+    public Playlist(String title, String artist, String albumArtUrl) {
         this.title = title;
         this.artist = artist;
-        this.imageResourceId = imageResourceId;
+        this.albumArtUrl = albumArtUrl;
     }
 
     public String getTitle() {
@@ -20,7 +20,7 @@ public class Playlist {
         return artist;
     }
 
-    public int getImageResourceId() {
-        return imageResourceId;
+    public String getAlbumArtUrl() {
+        return albumArtUrl;
     }
 }

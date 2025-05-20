@@ -19,10 +19,11 @@
         android:theme="@style/Theme.soundspottheme"
         tools:targetApi="31">
         <activity
+            android:name=".activities.SearchMusicActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.ChooseArtistSelectionActivity"
             android:exported="false" />
-
-
         <activity
             android:name=".fragments.SinglesFragment"
             android:exported="false" />

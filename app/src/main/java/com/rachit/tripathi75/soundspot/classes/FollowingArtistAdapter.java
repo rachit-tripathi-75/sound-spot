@@ -2,6 +2,7 @@ package com.rachit.tripathi75.soundspot.classes;
 
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,16 +16,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.imageview.ShapeableImageView;
 import com.rachit.tripathi75.soundspot.R;
+import com.rachit.tripathi75.soundspot.records.ArtistsSearch;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 public class FollowingArtistAdapter extends RecyclerView.Adapter<FollowingArtistAdapter.ArtistViewHolder> {
 
     private Context context;
-    private List<FollowingArtist> artists;
+    private List<ArtistsSearch.Data.Results> artists;
     private int lastPosition = -1;
 
-    public FollowingArtistAdapter(Context context, List<FollowingArtist> artists) {
+    public FollowingArtistAdapter(Context context, List<ArtistsSearch.Data.Results> artists) {
         this.context = context;
         this.artists = artists;
     }
@@ -38,9 +41,13 @@ public class FollowingArtistAdapter extends RecyclerView.Adapter<FollowingArtist
 
     @Override
     public void onBindViewHolder(@NonNull ArtistViewHolder holder, int position) {
-        FollowingArtist artist = artists.get(position);
-        holder.artistName.setText(artist.getName());
-        holder.artistImage.setImageResource(artist.getImageResourceId());
+        ArtistsSearch.Data.Results artist = artists.get(position);
+        holder.tvArtistName.setText(artist.name());
+//        holder.artistImage.setImageResource(artist.getImageResourceId());
+        Picasso.get().load(Uri.parse(artist.image().get(2).url())).into(holder.ivArtistProfilePic);
+        holder.tvArtistId.setText(artist.id());
+//        holder.tvArtistId.setVisibility(View.GONE);
+
 
         // Apply animation to individual items
         setAnimation(holder.itemView, position);
@@ -61,13 +68,14 @@ public class FollowingArtistAdapter extends RecyclerView.Adapter<FollowingArtist
     }
 
     public static class ArtistViewHolder extends RecyclerView.ViewHolder {
-        ShapeableImageView artistImage;
-        TextView artistName;
+        ShapeableImageView ivArtistProfilePic;
+        TextView tvArtistName, tvArtistId;
 
         public ArtistViewHolder(@NonNull View itemView) {
             super(itemView);
-            artistImage = itemView.findViewById(R.id.artist_image);
-            artistName = itemView.findViewById(R.id.artist_name);
+            ivArtistProfilePic = itemView.findViewById(R.id.ivArtistProfilePic);
+            tvArtistName = itemView.findViewById(R.id.tvArtistName);
+            tvArtistId = itemView.findViewById(R.id.tvArtistId);
 
             // Add click animation
             itemView.setOnClickListener(v -> {

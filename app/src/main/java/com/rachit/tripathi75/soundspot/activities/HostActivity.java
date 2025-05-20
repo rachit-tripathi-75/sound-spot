@@ -63,27 +63,27 @@ public class HostActivity extends AppCompatActivity {
                 .commit();
 
 
-//        binding.playBarPlayPauseIcon.setOnClickListener(view -> {
-//            applicationClass = (ApplicationClass) getApplication();
-//            ApplicationClass.setCurrentActivity(HostActivity.this);
-//
-//            applicationClass.togglePlayPause();
-//            applicationClass.showNotification(ApplicationClass.player.isPlaying() ? R.drawable.baseline_pause_24 : R.drawable.play_arrow_24px);
-//            binding.playBarPlayPauseIcon.setImageResource(ApplicationClass.player.isPlaying() ? R.drawable.baseline_pause_24 : R.drawable.play_arrow_24px);
-//        });
-//
-//        binding.playBarBackground.setOnClickListener(view -> {
-//            if (!ApplicationClass.MUSIC_ID.isBlank())
-//                startActivity(new Intent(this, MusicOverviewActivity.class).putExtra("id", ApplicationClass.MUSIC_ID));
-//        });
-//
-//        binding.playBarPrevIcon.setOnClickListener(view -> {
-//            applicationClass.prevTrack();
-//        });
-//
-//        binding.playBarNextIcon.setOnClickListener(view -> {
-//            applicationClass.nextTrack();
-//        });
+        binding.ibPlayBarPlayPauseIcon.setOnClickListener(view -> {
+            applicationClass = (ApplicationClass) getApplication();
+            ApplicationClass.setCurrentActivity(HostActivity.this);
+
+            applicationClass.togglePlayPause();
+            applicationClass.showNotification(ApplicationClass.player.isPlaying() ? R.drawable.baseline_pause_24 : R.drawable.play_arrow_24px);
+            binding.ibPlayBarPlayPauseIcon.setImageResource(ApplicationClass.player.isPlaying() ? R.drawable.baseline_pause_24 : R.drawable.play_arrow_24px);
+        });
+
+        binding.playerContainer.setOnClickListener(view -> {
+            if (!ApplicationClass.MUSIC_ID.isBlank())
+                startActivity(new Intent(this, MusicOverviewActivity.class).putExtra("id", ApplicationClass.MUSIC_ID));
+        });
+
+        binding.ibPlayBarPreviousIcon.setOnClickListener(view -> {
+            applicationClass.prevTrack();
+        });
+
+        binding.ibPlayBarNextIcon.setOnClickListener(view -> {
+            applicationClass.nextTrack();
+        });
 
         showPlayBarData();
         setUpAnimation();
@@ -110,7 +110,7 @@ public class HostActivity extends AppCompatActivity {
     }
 
     private void setupClickListeners() {
-        binding.btnPlayPause.setOnClickListener(v -> togglePlayPause());
+        binding.ibPlayBarPlayPauseIcon.setOnClickListener(v -> togglePlayPause());
 
         // Add click listeners for other buttons
     }
@@ -119,13 +119,13 @@ public class HostActivity extends AppCompatActivity {
         isPlaying = !isPlaying;
 
         // Change play/pause icon with animation
-        binding.btnPlayPause.animate()
+        binding.ibPlayBarPlayPauseIcon.animate()
                 .scaleX(0.8f)
                 .scaleY(0.8f)
                 .setDuration(100)
                 .withEndAction(() -> {
-                    binding.btnPlayPause.setImageResource(isPlaying ? R.drawable.ic_pause : R.drawable.ic_play);
-                    binding.btnPlayPause.animate()
+                    binding.ibPlayBarPlayPauseIcon.setImageResource(isPlaying ? R.drawable.ic_pause : R.drawable.ic_play);
+                    binding.ibPlayBarPlayPauseIcon.animate()
                             .scaleX(1f)
                             .scaleY(1f)
                             .setDuration(100)
@@ -154,7 +154,7 @@ public class HostActivity extends AppCompatActivity {
                     progressStatus = 0;
                     binding.progressBar.setProgress(progressStatus);
                     isPlaying = false;
-                    binding.btnPlayPause.setImageResource(R.drawable.ic_play);
+                    binding.ibPlayBarPlayPauseIcon.setImageResource(R.drawable.ic_play);
                 }
             }
         };
@@ -169,30 +169,30 @@ public class HostActivity extends AppCompatActivity {
 
 
     void showPlayBarData() {
-//        binding.playBarMusicTitle.setText(ApplicationClass.MUSIC_TITLE);
-//        binding.playBarMusicDesc.setText(ApplicationClass.MUSIC_DESCRIPTION);
-//        Picasso.get().load(Uri.parse(ApplicationClass.IMAGE_URL)).into(binding.playBarCoverImage);
-//
-//        if (ApplicationClass.player.isPlaying()) {
-//            binding.playBarPlayPauseIcon.setImageResource(R.drawable.baseline_pause_24);
-//        } else {
-//            binding.playBarPlayPauseIcon.setImageResource(R.drawable.play_arrow_24px);
-//        }
-//
-//        GradientDrawable gradientDrawable = new GradientDrawable();
-//        gradientDrawable.setColor(ApplicationClass.IMAGE_BG_COLOR);
-//        gradientDrawable.setCornerRadius(18);
-//        binding.playBarBackground.setBackground(gradientDrawable);
-//
-//        binding.playBarMusicTitle.setTextColor(ApplicationClass.TEXT_ON_IMAGE_COLOR1);
-//        binding.playBarMusicDesc.setTextColor(ApplicationClass.TEXT_ON_IMAGE_COLOR1);
-//
-//        binding.playBarPlayPauseIcon.setImageTintList(ColorStateList.valueOf(ApplicationClass.TEXT_ON_IMAGE_COLOR));
-//        binding.playBarPrevIcon.setImageTintList(ColorStateList.valueOf(ApplicationClass.TEXT_ON_IMAGE_COLOR));
-//        binding.playBarNextIcon.setImageTintList(ColorStateList.valueOf(ApplicationClass.TEXT_ON_IMAGE_COLOR));
-//
-//        OverScrollDecoratorHelper.setUpStaticOverScroll(binding.getRoot(), OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
-//
-//        handler.postDelayed(runnable, 1000);
+        binding.tvPlayBarMusicTitle.setText(ApplicationClass.MUSIC_TITLE);
+        binding.tvPlayBarArtistName.setText(ApplicationClass.MUSIC_DESCRIPTION);
+        Picasso.get().load(Uri.parse(ApplicationClass.IMAGE_URL)).into(binding.ivPlayBarAlbumArt);
+
+        if (ApplicationClass.player.isPlaying()) {
+            binding.ibPlayBarPlayPauseIcon.setImageResource(R.drawable.baseline_pause_24);
+        } else {
+            binding.ibPlayBarPlayPauseIcon.setImageResource(R.drawable.play_arrow_24px);
+        }
+
+        GradientDrawable gradientDrawable = new GradientDrawable();
+        gradientDrawable.setColor(ApplicationClass.IMAGE_BG_COLOR);
+        gradientDrawable.setCornerRadius(18);
+        binding.playerContainer.setBackground(gradientDrawable);
+
+        binding.tvPlayBarMusicTitle.setTextColor(ApplicationClass.TEXT_ON_IMAGE_COLOR1);
+        binding.tvPlayBarArtistName.setTextColor(ApplicationClass.TEXT_ON_IMAGE_COLOR1);
+
+//        binding.ibPlayBarPlayPauseIcon.setImageTintList(ColorStateList.valueOf(ApplicationClass.TEXT_ON_IMAGE_COLOR));
+        binding.ibPlayBarPreviousIcon.setImageTintList(ColorStateList.valueOf(ApplicationClass.TEXT_ON_IMAGE_COLOR));
+        binding.ibPlayBarNextIcon.setImageTintList(ColorStateList.valueOf(ApplicationClass.TEXT_ON_IMAGE_COLOR));
+
+        OverScrollDecoratorHelper.setUpStaticOverScroll(binding.getRoot(), OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
+
+        handler.postDelayed(runnable, 1000);
     }
 }
