@@ -60,6 +60,13 @@
 
     <color name="accent_red">#FF4D4D</color>
     <color name="text_secondary">#B3FFFFFF</color>
+
+
+    <color name="gray">#FFA1A1AA</color>
+    <color name="dark_gray">#FF27272A</color>
+    <color name="red">#FFDC2626</color>
+
+
 </resources>
 
 
