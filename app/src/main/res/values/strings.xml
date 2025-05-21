@@ -26,4 +26,38 @@
     <string name="song_cover">Song Cover</string>
     <string name="more_options">More Options</string>
 
+
+    <string name="select_source">Select Source</string>
+    <string name="from_where_you_import">From where you import your favorite playlists</string>
+    <string name="add_and_link_new_account">Add &amp; Link New Account</string>
+    <string name="spotify">Spotify</string>
+    <string name="apple_music">Apple Music</string>
+    <string name="deezer">Deezer</string>
+    <string name="amazon_music">Amazon Music</string>
+    <string name="one_account_limit">One account from each source can be linked per month.</string>
+    <string name="your_transfers">Your Transfers</string>
+    <string name="terms_agreement">By transferring playlists, you are accepting the <u>terms and conditions</u>.</string>
+    <string name="connecting">Connecting</string>
+    <string name="fetching_playlists">We are fetching your playlists</string>
+    <string name="might_take_a_minute">This might take a minute…</string>
+    <string name="notify_me">Notify Me!</string>
+    <string name="your_spotify_playlists">Your Spotify Playlists</string>
+    <string name="playlist_count">4 Playlists</string>
+    <string name="select_your_playlist_and_import">Select your playlist &amp; import</string>
+    <string name="zero_playlists_selected">0 Playlist Selected</string>
+    <string name="select_all">Select All</string>
+    <string name="playlist_icon">Playlist icon</string>
+    <string name="add_to_library">Add to library</string>
+    <string name="refresh">Refresh</string>
+    <string name="ongoing">Ongoing</string>
+    <string name="completed">Completed</string>
+    <string name="playlists_being_imported">Below playlists are being imported to Your Library</string>
+    <string name="import_completed_message">Imported Playlists might have some missing songs</string>
+    <string name="downloads">Downloads</string>
+    <string name="status_icon">Status icon</string>
+    <string name="transfer_date">21 May 2025</string>
+    <string name="go_to_library">Go to Library</string>
+    <string name="import_more">Import More</string>
+
+
 </resources>

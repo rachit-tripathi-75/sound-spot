@@ -41,10 +41,10 @@ public class UserCreatedSongsListAdapter extends RecyclerView.Adapter<UserCreate
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.binding.title.setText(data.get(position).title());
-        holder.binding.artist.setText(data.get(position).description());
+        holder.binding.tvSongTitle.setText(data.get(position).title());
+        holder.binding.tvArtistName.setText(data.get(position).description());
         if(!data.get(position).image().isBlank())
-            Picasso.get().load(Uri.parse(data.get(position).image())).into(holder.binding.coverImage);
+            Picasso.get().load(Uri.parse(data.get(position).image())).into(holder.binding.ivSongAlbumArt);
 
         holder.itemView.setOnClickListener(view -> {
             if(ApplicationClass.trackQueue != null)

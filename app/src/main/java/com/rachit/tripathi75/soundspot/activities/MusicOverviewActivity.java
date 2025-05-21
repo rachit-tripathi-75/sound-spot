@@ -9,20 +9,18 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.text.method.ScrollingMovementMethod;
+import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
-import android.widget.MediaController;
 import android.widget.SeekBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.core.view.WindowCompat;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
@@ -83,11 +81,25 @@ public class MusicOverviewActivity extends AppCompatActivity implements ActionPl
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMusicOverviewBinding.inflate(getLayoutInflater());
+
+        getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
+        getWindow().setSharedElementEnterTransition(
+                TransitionInflater.from(this).inflateTransition(R.transition.player_transition));
+        getWindow().setSharedElementReturnTransition(
+                TransitionInflater.from(this).inflateTransition(R.transition.player_transition));
+
+        // Set enter transition animation
+        getWindow().setEnterTransition(
+                TransitionInflater.from(this).inflateTransition(android.R.transition.slide_bottom));
+
+
         setContentView(binding.getRoot());
+
+        // Set up back button
+//        findViewById(R.id.back_button).setOnClickListener(v -> onBackPressed());
 
         binding.title.setSelected(true);
         binding.description.setSelected(true);
-
 
 
         if (!(((ApplicationClass) getApplicationContext()).getTrackQueue().size() > 1))
@@ -107,7 +119,7 @@ public class MusicOverviewActivity extends AppCompatActivity implements ActionPl
         });
 
         binding.snipBadge.setOnClickListener(view -> {
-            if(isSnipVisible) {
+            if (isSnipVisible) {
                 isSnipVisible = false;
                 binding.coverImage.setVisibility(View.GONE);
                 binding.vvSnip.setVisibility(View.VISIBLE);
@@ -651,5 +663,9 @@ public class MusicOverviewActivity extends AppCompatActivity implements ActionPl
         applicationClass.showNotification();
     }
 
-
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finishAfterTransition();
+    }
 }

@@ -41,16 +41,16 @@ public class NewReleasesFragment extends Fragment {
         RecyclerView newSinglesRecyclerView = view.findViewById(R.id.new_singles_recycler_view);
 
         // Create data
-        List<NewReleaseAlbum> newAlbums = new ArrayList<>();
-        newAlbums.add(new NewReleaseAlbum("Renaissance", "Beyoncé", R.drawable.baseline_album_24, R.color.pink_500));
-        newAlbums.add(new NewReleaseAlbum("Midnights", "Taylor Swift", R.drawable.baseline_album_24, R.color.blue_500));
-        newAlbums.add(new NewReleaseAlbum("Harry's House", "Harry Styles", R.drawable.baseline_album_24, R.color.amber_500));
+        List<NewReleaseSong> newAlbums = new ArrayList<>();
+        newAlbums.add(new NewReleaseSong("1", "Renaissance", "Beyoncé", "imgUrl"));
+        newAlbums.add(new NewReleaseSong("2", "Midnights", "Taylor Swift", "imgUrl"));
+        newAlbums.add(new NewReleaseSong("3", "Harry's House", "Harry Styles", "imgUrl"));
 
         List<NewReleaseSong> newSingles = new ArrayList<>();
-        newSingles.add(new NewReleaseSong(1, "Flowers", "Miley Cyrus", R.drawable.baseline_album_24));
-        newSingles.add(new NewReleaseSong(2, "Kill Bill", "SZA", R.drawable.baseline_album_24));
-        newSingles.add(new NewReleaseSong(3, "Anti-Hero", "Taylor Swift", R.drawable.baseline_album_24));
-        newSingles.add(new NewReleaseSong(4, "Unholy", "Sam Smith & Kim Petras", R.drawable.baseline_album_24));
+        newSingles.add(new NewReleaseSong("1", "Flowers", "Miley Cyrus", "imgUrl"));
+        newSingles.add(new NewReleaseSong("2", "Kill Bill", "SZA", "imgUrl"));
+        newSingles.add(new NewReleaseSong("3", "Anti-Hero", "Taylor Swift", "imgUrl"));
+        newSingles.add(new NewReleaseSong("4", "Unholy", "Sam Smith & Kim Petras", "imgUrl"));
 
         // Setup adapters
         AlbumsAdapter albumsAdapter = new AlbumsAdapter(newAlbums);

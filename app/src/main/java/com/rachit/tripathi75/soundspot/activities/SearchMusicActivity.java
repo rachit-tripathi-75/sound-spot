@@ -1,11 +1,14 @@
 package com.rachit.tripathi75.soundspot.activities;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -13,7 +16,9 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.material.chip.Chip;
+import com.google.gson.Gson;
 import com.rachit.tripathi75.soundspot.R;
+import com.rachit.tripathi75.soundspot.adapters.ActivitySearchListItemAdapter;
 import com.rachit.tripathi75.soundspot.adapters.AlbumsAdapter;
 import com.rachit.tripathi75.soundspot.adapters.ForYouAdapter;
 import com.rachit.tripathi75.soundspot.adapters.SearchResultsAdapter;
@@ -23,23 +28,33 @@ import com.rachit.tripathi75.soundspot.fragments.ChartsFragment;
 import com.rachit.tripathi75.soundspot.fragments.DiscoverFragment;
 import com.rachit.tripathi75.soundspot.fragments.MoodGenresFragment;
 import com.rachit.tripathi75.soundspot.fragments.NewReleasesFragment;
-import com.rachit.tripathi75.soundspot.model.NewReleaseAlbum;
 import com.rachit.tripathi75.soundspot.model.NewReleaseSong;
+import com.rachit.tripathi75.soundspot.model.SearchListItem;
+import com.rachit.tripathi75.soundspot.network.ApiManager;
+import com.rachit.tripathi75.soundspot.network.utility.RequestNetwork;
+import com.rachit.tripathi75.soundspot.records.GlobalSearch;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class SearchMusicActivity extends AppCompatActivity implements CategoryClickListener {
 
     private ActivitySearchMusicBinding binding;
+    private final String TAG = "SearchMusicActivity";
+    private GlobalSearch globalSearch;
 
 
     private String activeGenre = null;
     private List<NewReleaseSong> topSongs = new ArrayList<>();
     private List<NewReleaseSong> forYouSongs = new ArrayList<>();
-    private List<NewReleaseAlbum> albums = new ArrayList<>();
+    private List<NewReleaseSong> newAlbumsAndSingles = new ArrayList<>();
     private List<SearchResult> searchResults = new ArrayList<>();
     private boolean isInCategoryScreen = false;
+
+    private Handler handler = new Handler();
+    private Runnable searchRunnable;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,29 +68,6 @@ public class SearchMusicActivity extends AppCompatActivity implements CategoryCl
         binding.searchEditText.setAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
         binding.genresChipGroup.setAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_up));
 
-        // Setup search functionality
-        binding.searchEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String query = s.toString();
-                if (query.isEmpty()) {
-                    if (!isInCategoryScreen) {
-                        showMainContent();
-                    }
-                } else {
-                    showSearchResults(query);
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
-
         // Setup back button
         binding.backButton.setOnClickListener(v -> {
             if (isInCategoryScreen) {
@@ -83,11 +75,11 @@ public class SearchMusicActivity extends AppCompatActivity implements CategoryCl
                 isInCategoryScreen = false;
             }
             // Additional back logic if needed
-            binding.cvPickedForYou.setVisibility(View.VISIBLE);
+            onBackPressed();
         });
 
         // Setup genre chips
-        setupGenreChips();
+//        setupGenreChips();
 
         // Initialize data
         initializeData();
@@ -97,6 +89,14 @@ public class SearchMusicActivity extends AppCompatActivity implements CategoryCl
 
         // Setup category cards
         setupCategoryCards();
+
+        showDataToJustForYou("songs 2024");
+        showDataToTopSongs("top songs 2025 hindi");
+        showDataToNewAlbumsAndSingles("punjabi hits");
+
+        // setup search functionality, watcher on search edit text, for debounce search result.........
+        setUpSearchFunctionality();
+
     }
 
 
@@ -169,20 +169,20 @@ public class SearchMusicActivity extends AppCompatActivity implements CategoryCl
 
     private void initializeData() {
         // Initialize top songs
-        topSongs.add(new NewReleaseSong(1, "Greedy", "Tate McRae", R.drawable.baseline_album_24));
-        topSongs.add(new NewReleaseSong(2, "One of the Girls", "The Weeknd & Lily Rose", R.drawable.baseline_album_24));
-        topSongs.add(new NewReleaseSong(3, "Popular", "The Weeknd, Playboi Carti", R.drawable.baseline_album_24));
-        topSongs.add(new NewReleaseSong(4, "I Wanna Be Yours", "Arctic Monkeys", R.drawable.baseline_album_24));
+        topSongs.add(new NewReleaseSong("1", "Greedy", "Tate McRae", "imgUrl"));
+        topSongs.add(new NewReleaseSong("2", "One of the Girls", "The Weeknd & Lily Rose", "imgUrl"));
+        topSongs.add(new NewReleaseSong("3", "Popular", "The Weeknd, Playboi Carti", "imgUrl"));
+        topSongs.add(new NewReleaseSong("4", "I Wanna Be Yours", "Arctic Monkeys", "imgUrl"));
 
         // Initialize for you songs
-        forYouSongs.add(new NewReleaseSong(1, "Half of My Heart", "John Mayer", R.drawable.baseline_album_24));
-        forYouSongs.add(new NewReleaseSong(2, "Dance The Night", "Dua Lipa", R.drawable.baseline_album_24));
-        forYouSongs.add(new NewReleaseSong(3, "End Game", "Ft. Ed Sheeran", R.drawable.baseline_album_24));
+        forYouSongs.add(new NewReleaseSong("1", "Half of My Heart", "John Mayer", "imgUrl"));
+        forYouSongs.add(new NewReleaseSong("1", "Dance The Night", "Dua Lipa", "imgUrl"));
+        forYouSongs.add(new NewReleaseSong("1", "End Game", "Ft. Ed Sheeran", "imgUrl"));
 
         // Initialize albums
-        albums.add(new NewReleaseAlbum("XXL (Stripped)", "Various Artists", R.drawable.baseline_album_24, R.color.blue_500));
-        albums.add(new NewReleaseAlbum("23 favorite", "Various Artists", R.drawable.baseline_album_24, R.color.gray_800));
-        albums.add(new NewReleaseAlbum("Waiting Back", "Various Artists", R.drawable.baseline_album_24, R.color.orange_300));
+        newAlbumsAndSingles.add(new NewReleaseSong("1", "XXL (Stripped)", "Various Artists", "imgUrl"));
+        newAlbumsAndSingles.add(new NewReleaseSong("2", "23 favorite", "Various Artists", "imgUrl"));
+        newAlbumsAndSingles.add(new NewReleaseSong("3", "Waiting Back", "Various Artists", "imgUrl"));
     }
 
     private void setupRecyclerViews() {
@@ -197,7 +197,7 @@ public class SearchMusicActivity extends AppCompatActivity implements CategoryCl
         binding.forYouRecyclerView.setAdapter(forYouAdapter);
 
         // Setup albums recycler view
-        AlbumsAdapter albumsAdapter = new AlbumsAdapter(albums);
+        AlbumsAdapter albumsAdapter = new AlbumsAdapter(newAlbumsAndSingles);
         binding.albumsRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         binding.albumsRecyclerView.setAdapter(albumsAdapter);
 
@@ -208,6 +208,7 @@ public class SearchMusicActivity extends AppCompatActivity implements CategoryCl
     }
 
     private void showMainContent() {
+//        binding.cvPickedForYou.setVisibility(View.GONE);
         binding.genresChipGroup.setVisibility(View.VISIBLE);
         binding.categoriesLayout.setVisibility(View.VISIBLE);
         binding.forYouLayout.setVisibility(View.VISIBLE);
@@ -223,7 +224,45 @@ public class SearchMusicActivity extends AppCompatActivity implements CategoryCl
         binding.albumsLayout.startAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_up));
     }
 
+
+    private void setUpSearchFunctionality() {
+
+        SearchResultsAdapter adapter = new SearchResultsAdapter(new ArrayList<>());
+        binding.searchResultsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        binding.searchResultsRecyclerView.setAdapter(adapter);
+
+        binding.searchEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                if (searchRunnable != null)
+                    handler.removeCallbacks(searchRunnable);
+
+                searchRunnable = () -> showSearchResults(s.toString());
+                handler.postDelayed(searchRunnable, 500); // Debounce delay
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+    }
+
     private void showSearchResults(String query) {
+
+        if (query.isEmpty()) {
+            if (!isInCategoryScreen) {
+                showMainContent();
+                return;
+            }
+        }
+
+        binding.cvPickedForYou.setVisibility(View.GONE);
         binding.genresChipGroup.setVisibility(View.GONE);
         binding.categoriesLayout.setVisibility(View.GONE);
         binding.forYouLayout.setVisibility(View.GONE);
@@ -237,21 +276,134 @@ public class SearchMusicActivity extends AppCompatActivity implements CategoryCl
 
         // Update search results
         searchResults.clear();
-        searchResults.add(new SearchResult(SearchResult.TYPE_SONG, query + " Song Result 1", "Artist Name", R.drawable.baseline_album_24));
-        searchResults.add(new SearchResult(SearchResult.TYPE_SONG, query + " Song Result 2", "Another Artist", R.drawable.baseline_album_24));
-        searchResults.add(new SearchResult(SearchResult.TYPE_ALBUM, query + " Album", "Various Artists", R.drawable.baseline_album_24));
-        searchResults.add(new SearchResult(SearchResult.TYPE_ARTIST, query + " Artist", "", R.drawable.baseline_album_24));
-        searchResults.add(new SearchResult(SearchResult.TYPE_PLAYLIST, query + " Playlist", "Spotify", R.drawable.baseline_album_24));
+
+
+        showShimmerData();
+
+        final ApiManager apiManager = new ApiManager(this);
+        apiManager.globalSearch(query, new RequestNetwork.RequestListener() {
+            @Override
+            public void onResponse(String tag, String response, HashMap<String, Object> responseHeaders) {
+                globalSearch = new Gson().fromJson(response, GlobalSearch.class);
+                if (globalSearch.success()) {
+                    refreshData(query);
+                }
+                Log.i(TAG, "onResponse: " + response);
+            }
+
+            @Override
+            public void onErrorResponse(String tag, String message) {
+                Log.e(TAG, "onErrorResponse: " + message);
+            }
+        });
+
+
+//        searchResults.add(new SearchResult(SearchResult.TYPE_SONG, query + " Song Result 1", "Artist Name", R.drawable.baseline_album_24));
+//        searchResults.add(new SearchResult(SearchResult.TYPE_SONG, query + " Song Result 2", "Another Artist", R.drawable.baseline_album_24));
+//        searchResults.add(new SearchResult(SearchResult.TYPE_ALBUM, query + " Album", "Various Artists", R.drawable.baseline_album_24));
+//        searchResults.add(new SearchResult(SearchResult.TYPE_ARTIST, query + " Artist", "", R.drawable.baseline_album_24));
+//        searchResults.add(new SearchResult(SearchResult.TYPE_PLAYLIST, query + " Playlist", "Spotify", R.drawable.baseline_album_24));
 
         // Notify adapter
-        binding.searchResultsRecyclerView.getAdapter().notifyDataSetChanged();
+//        binding.searchResultsRecyclerView.getAdapter().notifyDataSetChanged();
 
         // Update title
-        TextView searchResultsTitle = findViewById(R.id.search_results_title);
-        searchResultsTitle.setText("Search Results for \"" + query + "\"");
-
-        isInCategoryScreen = false;
+//        TextView searchResultsTitle = findViewById(R.id.search_results_title);
+//        searchResultsTitle.setText("Search Results for \"" + query + "\"");
+//
+//        isInCategoryScreen = false;
     }
+
+
+    private void refreshData(String query) {
+        final List<SearchListItem> data = new ArrayList<>();
+
+        globalSearch.data().topQuery().results().forEach(item -> {
+            if (!(item.type().equals("song") || item.type().equals("album") || item.type().equals("playlist") || item.type().equals("artist")))
+                return;
+            data.add(
+                    new SearchListItem(
+                            item.id(),
+                            item.title(),
+                            item.description(),
+                            item.image().get(item.image().size() - 1).url(),
+                            SearchListItem.Type.valueOf(item.type().toUpperCase())
+                    )
+            );
+        });
+        addSongsData(data);
+        addAlbumsData(data);
+        addPlaylistsData(data);
+        addArtistsData(data);
+
+        if (!data.isEmpty()){
+            binding.searchResultsRecyclerView.setAdapter(new ActivitySearchListItemAdapter(data));
+            binding.searchResultsRecyclerView.getAdapter().notifyDataSetChanged();
+            TextView searchResultsTitle = findViewById(R.id.search_results_title);
+            searchResultsTitle.setText("Search Results for \"" + query + "\"");
+
+            isInCategoryScreen = false;
+        }
+
+    }
+
+
+    private void addSongsData(List<SearchListItem> data) {
+        globalSearch.data().songs().results().forEach(item -> {
+            data.add(
+                    new SearchListItem(
+                            item.id(),
+                            item.title(),
+                            item.description(),
+                            item.image().get(item.image().size() - 1).url(),
+                            SearchListItem.Type.SONG
+                    )
+            );
+        });
+    }
+
+    private void addAlbumsData(List<SearchListItem> data) {
+        globalSearch.data().albums().results().forEach(item -> {
+            data.add(
+                    new SearchListItem(
+                            item.id(),
+                            item.title(),
+                            item.description(),
+                            item.image().get(item.image().size() - 1).url(),
+                            SearchListItem.Type.ALBUM
+                    )
+            );
+        });
+    }
+
+    private void addPlaylistsData(List<SearchListItem> data) {
+        globalSearch.data().playlists().results().forEach(item -> {
+            data.add(
+                    new SearchListItem(
+                            item.id(),
+                            item.title(),
+                            item.description(),
+                            item.image().get(item.image().size() - 1).url(),
+                            SearchListItem.Type.PLAYLIST
+                    )
+            );
+        });
+    }
+
+    private void addArtistsData(List<SearchListItem> data) {
+        globalSearch.data().artists().results().forEach(item -> {
+            data.add(
+                    new SearchListItem(
+                            item.id(),
+                            item.title(),
+                            item.description(),
+                            item.image().get(item.image().size() - 1).url(),
+                            SearchListItem.Type.ARTIST
+                    )
+            );
+        });
+    }
+
 
     private void showCategoryScreen(String category) {
         binding.genresChipGroup.setVisibility(View.GONE);
@@ -295,28 +447,28 @@ public class SearchMusicActivity extends AppCompatActivity implements CategoryCl
     }
 
     private void filterSongsByGenre(String genre) {
-        // This is a simple filter for demo purposes
-        // In a real app, you would filter based on actual genre metadata
-
-        List<NewReleaseSong> filteredTopSongs = new ArrayList<>();
-        List<NewReleaseSong> filteredForYouSongs = new ArrayList<>();
-
-        // Simple filtering logic - in a real app this would be more sophisticated
-        for (NewReleaseSong song : topSongs) {
-            if (song.id % 2 == 0) { // Just a demo filter
-                filteredTopSongs.add(song);
-            }
-        }
-
-        for (NewReleaseSong song : forYouSongs) {
-            if (song.id % 2 == 0) { // Just a demo filter
-                filteredForYouSongs.add(song);
-            }
-        }
+//        // This is a simple filter for demo purposes
+//        // In a real app, you would filter based on actual genre metadata
+//
+//        List<NewReleaseSong> filteredTopSongs = new ArrayList<>();
+//        List<NewReleaseSong> filteredForYouSongs = new ArrayList<>();
+//
+//        // Simple filtering logic - in a real app this would be more sophisticated
+//        for (NewReleaseSong song : topSongs) {
+//            if (song.id % 2 == 0) { // Just a demo filter
+//                filteredTopSongs.add(song);
+//            }
+//        }
+//
+//        for (NewReleaseSong song : forYouSongs) {
+//            if (song.id % 2 == 0) { // Just a demo filter
+//                filteredForYouSongs.add(song);
+//            }
+//        }
 
         // Update adapters
-        ((TopSongsAdapter) binding.topSongsRecyclerView.getAdapter()).updateSongs(filteredTopSongs);
-        ((ForYouAdapter) binding.forYouRecyclerView.getAdapter()).updateSongs(filteredForYouSongs);
+//        ((TopSongsAdapter) binding.topSongsRecyclerView.getAdapter()).updateSongs(filteredTopSongs);
+//        ((ForYouAdapter) binding.forYouRecyclerView.getAdapter()).updateSongs(filteredForYouSongs);
     }
 
     private void resetSongLists() {
@@ -353,8 +505,185 @@ public class SearchMusicActivity extends AppCompatActivity implements CategoryCl
         } else {
             super.onBackPressed();
         }
-        binding.cvPickedForYou.setVisibility(View.VISIBLE);
     }
+
+
+    private void showDataToJustForYou(String query) {
+        final ApiManager apiManager = new ApiManager(this);
+        apiManager.globalSearch(query, new RequestNetwork.RequestListener() {
+            @Override
+            public void onResponse(String tag, String response, HashMap<String, Object> responseHeaders) {
+                globalSearch = new Gson().fromJson(response, GlobalSearch.class);
+                if (globalSearch.success()) {
+                    refreshDataForJustForYou();
+                    Gson gson = new Gson();
+                    Log.d("justForYouTAG", "onResponse: " + gson.toJson(globalSearch.data().songs().results()));
+                }
+                Log.i(TAG, "onResponse: " + response);
+            }
+
+            @Override
+            public void onErrorResponse(String tag, String message) {
+                Log.e(TAG, "onErrorResponse: " + message);
+            }
+        });
+    }
+
+
+    private void showDataToTopSongs(String query) {
+//        showShimmerData();
+
+        final ApiManager apiManager = new ApiManager(this);
+        apiManager.globalSearch(query, new RequestNetwork.RequestListener() {
+            @Override
+            public void onResponse(String tag, String response, HashMap<String, Object> responseHeaders) {
+                globalSearch = new Gson().fromJson(response, GlobalSearch.class);
+                if (globalSearch.success()) {
+                    refreshDataForTopSongs();
+                    Gson gson = new Gson();
+                    Log.d("topSongsTAG", "onResponse: " + gson.toJson(globalSearch.data().songs().results()));
+                }
+                Log.i(TAG, "onResponse: " + response);
+            }
+
+            @Override
+            public void onErrorResponse(String tag, String message) {
+                Log.e(TAG, "onErrorResponse: " + message);
+            }
+        });
+    }
+
+
+    private void showDataToNewAlbumsAndSingles(String query) {
+        final ApiManager apiManager = new ApiManager(this);
+        apiManager.globalSearch(query, new RequestNetwork.RequestListener() {
+            @Override
+            public void onResponse(String tag, String response, HashMap<String, Object> responseHeaders) {
+                globalSearch = new Gson().fromJson(response, GlobalSearch.class);
+                if (globalSearch.success()) {
+                    refreshDataForNewAlbumsAndSingles();
+                    Gson gson = new Gson();
+                    Log.d("newAlbumsAndSinglesTAG", "onResponse: " + gson.toJson(globalSearch.data().songs().results()));
+                }
+                Log.i(TAG, "onResponse: " + response);
+            }
+
+            @Override
+            public void onErrorResponse(String tag, String message) {
+                Log.e(TAG, "onErrorResponse: " + message);
+            }
+        });
+    }
+
+
+// ------------------ refreshed data results -------------------------------------------
+
+
+    private void refreshDataForJustForYou() {
+        forYouSongs.clear();
+
+        globalSearch.data().songs().results().forEach(item -> {
+            Gson gson = new Gson();
+            if (!(item.type().equals("song") || item.type().equals("album") || item.type().equals("playlist") || item.type().equals("artist")))
+                return;
+            if (item.type().equalsIgnoreCase("song")) {
+                Log.d("justForYouTAGx", gson.toJson(item));
+                Log.d("justForYouDetailsTAG", "id: " + item.id() + " title: " + item.title() + " description: " + item.description() + " url: " + item.image().get(2).url());
+                forYouSongs.add(new NewReleaseSong(item.id(), item.title(), item.description(), item.image().get(2).url()));
+            }
+
+
+        });
+
+        for (int i = 0; i < forYouSongs.size(); i++) {
+            NewReleaseSong s = forYouSongs.get(i);
+            Log.d("justForYouLoopTAG", "id: " + s.getId() + " --- title: " + s.getTitle() + " --- description: " + s.getArtist() + " --- url: " + s.getImageUrl());
+        }
+
+
+        if (!forYouSongs.isEmpty())
+            binding.forYouRecyclerView.setAdapter(new ForYouAdapter(forYouSongs));
+        else {
+            Toast.makeText(this, "Data is empty for 'Just for you' ", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    private void refreshDataForTopSongs() {
+        topSongs.clear();
+
+        globalSearch.data().songs().results().forEach(item -> {
+            Gson gson = new Gson();
+            if (!(item.type().equals("song") || item.type().equals("album") || item.type().equals("playlist") || item.type().equals("artist")))
+                return;
+            if (item.type().equalsIgnoreCase("song")) {
+                Log.d("topSongsTAGx", gson.toJson(item));
+                Log.d("topSongDetailsTAG", "id: " + item.id() + " title: " + item.title() + " description: " + item.description() + " url: " + item.image().get(2).url());
+                topSongs.add(new NewReleaseSong(item.id(), item.title(), item.description(), item.image().get(2).url()));
+            }
+
+
+        });
+
+        for (int i = 0; i < topSongs.size(); i++) {
+            NewReleaseSong s = topSongs.get(i);
+            Log.d("topSongsDataLoopTAG", "id: " + s.getId() + " --- title: " + s.getTitle() + " --- description: " + s.getArtist() + " --- url: " + s.getImageUrl());
+        }
+
+
+        if (!topSongs.isEmpty())
+            binding.topSongsRecyclerView.setAdapter(new TopSongsAdapter(topSongs));
+        else {
+            Toast.makeText(this, "Data is empty for 'Top Songs' ", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void refreshDataForNewAlbumsAndSingles() {
+        newAlbumsAndSingles.clear();
+
+        globalSearch.data().songs().results().forEach(item -> {
+            Gson gson = new Gson();
+            if (!(item.type().equals("song") || item.type().equals("album") || item.type().equals("playlist") || item.type().equals("artist")))
+                return;
+//            if (item.type().equalsIgnoreCase("album")) {
+            Log.d("newAlbumsAndSinglesTAGx", gson.toJson(item));
+            Log.d("newAlbumsAndSinglesDetailsTAG", "id: " + item.id() + " title: " + item.title() + " description: " + item.description() + " url: " + item.image().get(2).url());
+            newAlbumsAndSingles.add(new NewReleaseSong(item.id(), item.title(), item.description(), item.image().get(2).url()));
+//            }
+
+
+        });
+
+        for (int i = 0; i < newAlbumsAndSingles.size(); i++) {
+            NewReleaseSong s = newAlbumsAndSingles.get(i);
+            Log.d("newAlbumsAndSinglesDataLoopTAG", "id: " + s.getId() + " --- title: " + s.getTitle() + " --- description: " + s.getArtist() + " --- url: " + s.getImageUrl());
+        }
+
+
+        if (!newAlbumsAndSingles.isEmpty())
+            binding.albumsRecyclerView.setAdapter(new AlbumsAdapter(newAlbumsAndSingles));
+        else {
+            Toast.makeText(this, "Data is empty for 'NewAlbumsAndSingles' ", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+
+
+    private void showShimmerData() {
+//        List<SearchListItem> data = new ArrayList<>();
+//        for (int i = 0; i < 11; i++) {
+//            data.add(new SearchListItem(
+//                    "<shimmer>",
+//                    "",
+//                    "",
+//                    "",
+//                    SearchListItem.Type.SONG
+//            ));
+//        }
+//        binding.topSongsRecyclerView.setAdapter(new TopSongsAdapter(data));
+    }
+
 
     // Model classes
 

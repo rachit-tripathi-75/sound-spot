@@ -1,15 +1,20 @@
 package com.rachit.tripathi75.soundspot.model;
 
 public class NewReleaseSong {
-    public static int id;
-    public static String title;
-    public static String artist;
-    public static int imageResId;
+    private final String id;
+    private final String title;
+    private final String artist;
+    private final String imageUrl;
 
-    public NewReleaseSong(int id, String title, String artist, int imageResId) {
+    public NewReleaseSong(String id, String title, String artist, String imageUrl) {
         this.id = id;
         this.title = title;
         this.artist = artist;
-        this.imageResId = imageResId;
+        this.imageUrl = imageUrl;
     }
+
+    public String getId() { return id; }
+    public String getTitle() { return title; }
+    public String getArtist() { return artist; }
+    public String getImageUrl() { return imageUrl; }
 }

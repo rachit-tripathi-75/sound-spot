@@ -1,14 +1,19 @@
 package com.rachit.tripathi75.soundspot.activities;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Pair;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -19,6 +24,7 @@ import com.rachit.tripathi75.soundspot.ApplicationClass;
 import com.rachit.tripathi75.soundspot.R;
 import com.rachit.tripathi75.soundspot.databinding.ActivityHostBinding;
 import com.rachit.tripathi75.soundspot.fragments.HomeFragment;
+import com.rachit.tripathi75.soundspot.fragments.ImportPlaylistFragment;
 import com.rachit.tripathi75.soundspot.fragments.LibraryFragment;
 import com.rachit.tripathi75.soundspot.fragments.SearchFragment;
 import com.squareup.picasso.Picasso;
@@ -33,7 +39,7 @@ public class HostActivity extends AppCompatActivity {
     private Runnable runnable = this::showPlayBarData;
     private ApplicationClass applicationClass;
 
-    private Fragment homeFragment, searchFragment, libraryFragment;
+    private Fragment homeFragment, searchFragment, libraryFragment, importPlaylistFragment;
     private Fragment activeFragment;
     private FragmentManager fragmentManager;
 
@@ -52,13 +58,15 @@ public class HostActivity extends AppCompatActivity {
 
         homeFragment = new HomeFragment();
         searchFragment = new SearchFragment();
+        importPlaylistFragment = new ImportPlaylistFragment();
         libraryFragment = new LibraryFragment();
         activeFragment = homeFragment;
 
 
         fragmentManager.beginTransaction()
                 .add(R.id.fragment_container, homeFragment, "Home")
-                .add(R.id.fragment_container, searchFragment, "Search").hide(searchFragment)
+//                .add(R.id.fragment_container, searchFragment, "Search").hide(searchFragment)
+                .add(R.id.fragment_container, importPlaylistFragment, "Import Playlist").hide(importPlaylistFragment)
                 .add(R.id.fragment_container, libraryFragment, "Library").hide(libraryFragment)
                 .commit();
 
@@ -74,7 +82,7 @@ public class HostActivity extends AppCompatActivity {
 
         binding.playerContainer.setOnClickListener(view -> {
             if (!ApplicationClass.MUSIC_ID.isBlank())
-                startActivity(new Intent(this, MusicOverviewActivity.class).putExtra("id", ApplicationClass.MUSIC_ID));
+                openFullPlayer();
         });
 
         binding.ibPlayBarPreviousIcon.setOnClickListener(view -> {
@@ -94,12 +102,29 @@ public class HostActivity extends AppCompatActivity {
             if (position == 0) {
                 switchFragment(homeFragment);
             } else if (position == 1) {
-                switchFragment(searchFragment);
+//                switchFragment(searchFragment);
+//                switchFragment(searchFragment);
+                startActivity(new Intent(this, ImportPlaylistActivity.class));
             } else if (position == 2) {
                 switchFragment(libraryFragment);
             }
             return true;
         });
+    }
+
+    private void openFullPlayer() {
+
+        // Create the transition animation pairs
+        Pair<View, String> albumArtPair = Pair.create(binding.ivPlayBarAlbumArt, "album_art_transition");
+        Pair<View, String> titlePair = Pair.create(binding.tvPlayBarMusicTitle, "title_transition");
+        Pair<View, String> artistPair = Pair.create(binding.tvPlayBarArtistName, "artist_transition");
+        Pair<View, String> playButtonPair = Pair.create(binding.ibPlayBarPlayPauseIcon, "play_button_transition");
+
+        // Create the activity options with the transitions
+        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(
+                this, albumArtPair, titlePair, artistPair, playButtonPair);
+
+        startActivity(new Intent(this, MusicOverviewActivity.class).putExtra("id", ApplicationClass.MUSIC_ID), options.toBundle());
     }
 
     private void setUpAnimation() {
@@ -195,4 +220,5 @@ public class HostActivity extends AppCompatActivity {
 
         handler.postDelayed(runnable, 1000);
     }
+
 }

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/selectSourceFragment">
+
+    <fragment
+        android:id="@+id/selectSourceFragment"
+        android:name="com.rachit.tripathi75.soundspot.fragments.ImportPlaylistSelectSourceFragment"
+        android:label="Select Source"
+        tools:layout="@layout/fragment_select_source">
+        <action
+            android:id="@+id/action_selectSourceFragment_to_loadingFragment"
+            app:destination="@id/loadingFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out" />
+        <action
+            android:id="@+id/action_selectSourceFragment_to_transferStatusFragment"
+            app:destination="@id/transferStatusFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/loadingFragment"
+        android:name="com.rachit.tripathi75.soundspot.fragments.ImportPlaylistLoadingFragment"
+        android:label="Loading"
+        tools:layout="@layout/fragment_loading">
+        <action
+            android:id="@+id/action_loadingFragment_to_playlistSelectionFragment"
+            app:destination="@id/playlistSelectionFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/playlistSelectionFragment"
+        android:name="com.rachit.tripathi75.soundspot.fragments.ImportPlaylistPlaylistSelectionFragment"
+        android:label="Playlist Selection"
+        tools:layout="@layout/fragment_playlist_selection">
+        <action
+            android:id="@+id/action_playlistSelectionFragment_to_transferStatusFragment"
+            app:destination="@id/transferStatusFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/transferStatusFragment"
+        android:name="com.rachit.tripathi75.soundspot.fragments.ImportPlaylistTransferStatusFragment"
+        android:label="Transfer Status"
+        tools:layout="@layout/fragment_transfer_status">
+        <action
+            android:id="@+id/action_transferStatusFragment_to_selectSourceFragment"
+            app:destination="@id/selectSourceFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/fade_out"
+            app:popUpTo="@id/selectSourceFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+</navigation>

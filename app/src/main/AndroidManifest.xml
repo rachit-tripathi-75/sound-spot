@@ -19,6 +19,9 @@
         android:theme="@style/Theme.soundspottheme"
         tools:targetApi="31">
         <activity
+            android:name=".activities.ImportPlaylistActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.SearchMusicActivity"
             android:exported="false" />
         <activity

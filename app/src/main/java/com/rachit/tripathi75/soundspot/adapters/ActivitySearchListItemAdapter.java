@@ -47,15 +47,15 @@ public class ActivitySearchListItemAdapter extends RecyclerView.Adapter<Activity
             return;
         }
 
-        holder.itemView.findViewById(R.id.title).setSelected(true);
-        holder.itemView.findViewById(R.id.artist).setSelected(true);
+        holder.itemView.findViewById(R.id.tvSongTitle).setSelected(true);
+        holder.itemView.findViewById(R.id.tvArtistName).setSelected(true);
 
         SearchListItem item = data.get(position);
 
-        ((TextView) holder.itemView.findViewById(R.id.title)).setText(item.title());
-        ((TextView) holder.itemView.findViewById(R.id.artist)).setText(item.subtitle());
+        ((TextView) holder.itemView.findViewById(R.id.tvSongTitle)).setText(item.title());
+        ((TextView) holder.itemView.findViewById(R.id.tvArtistName)).setText(item.subtitle());
 
-        Picasso.get().load(Uri.parse(item.coverImage())).into(((ImageView) holder.itemView.findViewById(R.id.coverImage)));
+        Picasso.get().load(Uri.parse(item.coverImage())).into(((ImageView) holder.itemView.findViewById(R.id.ivSongAlbumArt)));
 
         holder.itemView.setOnClickListener(view -> {
             final Intent intent = new Intent();

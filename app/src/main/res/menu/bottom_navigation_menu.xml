@@ -5,10 +5,15 @@
         android:icon="@drawable/home"
         android:title="Home" />
 
+<!--    <item-->
+<!--        android:id="@+id/itemSearch"-->
+<!--        android:icon="@drawable/search"-->
+<!--        android:title="Search" />-->
+
     <item
-        android:id="@+id/itemSearch"
-        android:icon="@drawable/search"
-        android:title="Search" />
+        android:id="@+id/itemImportPlaylist"
+        android:icon="@drawable/importplaylist"
+        android:title="Import" />
 
     <item
         android:id="@+id/itemLibrary"

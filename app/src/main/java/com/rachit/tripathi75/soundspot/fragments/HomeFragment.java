@@ -544,7 +544,7 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        apiManager.searchAlbums("Yo Yo Honey Singh", 0, 15, new RequestNetwork.RequestListener() {
+        apiManager.searchAlbums("Hindi 2025", 0, 15, new RequestNetwork.RequestListener() {
             @Override
             public void onResponse(String tag, String response, HashMap<String, Object> responseHeaders) {
                 AlbumsSearch albumsSearch = new Gson().fromJson(response, AlbumsSearch.class);

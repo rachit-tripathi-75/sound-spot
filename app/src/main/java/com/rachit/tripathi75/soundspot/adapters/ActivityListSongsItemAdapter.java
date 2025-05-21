@@ -45,19 +45,19 @@ public class ActivityListSongsItemAdapter extends RecyclerView.Adapter<ActivityL
 
         SongResponse.Song song = data.get(position);
 
-        holder.itemView.findViewById(R.id.title).setSelected(true);
-        holder.itemView.findViewById(R.id.artist).setSelected(true);
+        holder.itemView.findViewById(R.id.tvSongTitle).setSelected(true);
+        holder.itemView.findViewById(R.id.tvArtistName).setSelected(true);
 
-        ((TextView) holder.itemView.findViewById(R.id.title)).setText(song.name());
+        ((TextView) holder.itemView.findViewById(R.id.tvSongTitle)).setText(song.name());
         StringBuilder artistsNames = new StringBuilder();
         for (int i = 0; i < song.artists().all().size(); i++) {
             if (artistsNames.toString().contains(song.artists().all().get(i).name())) continue;
             artistsNames.append(song.artists().all().get(i).name());
             artistsNames.append(", ");
         }
-        ((TextView) holder.itemView.findViewById(R.id.artist)).setText(artistsNames.toString());
+        ((TextView) holder.itemView.findViewById(R.id.tvArtistName)).setText(artistsNames.toString());
 
-        Picasso.get().load(Uri.parse(song.image().get(song.image().size() - 1).url())).into(((ImageView) holder.itemView.findViewById(R.id.coverImage)));
+        Picasso.get().load(Uri.parse(song.image().get(song.image().size() - 1).url())).into(((ImageView) holder.itemView.findViewById(R.id.ivSongAlbumArt)));
 
         holder.itemView.setOnClickListener(view -> {
             if(ApplicationClass.trackQueue != null)

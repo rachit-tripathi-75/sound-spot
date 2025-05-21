@@ -36,7 +36,8 @@
                     android:layout_height="match_parent"
                     android:layout_centerInParent="true"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/taylor" />
+                    android:src="@drawable/taylor"
+                    android:transitionName="album_art_transition" />
 
                 <androidx.media3.ui.PlayerView
                     android:id="@+id/vvSnip"
@@ -44,6 +45,7 @@
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:alpha="0.5"
+                    android:transitionName="album_art_transition"
                     android:visibility="gone"
                     app:resize_mode="zoom"
                     app:use_controller="false" />
@@ -75,6 +77,7 @@
                 android:textColor="@color/white"
                 android:textSize="@dimen/_22ssp"
                 android:textStyle="bold"
+                android:transitionName="title_transition"
                 app:layout_constraintBottom_toTopOf="@id/description"
                 app:layout_constraintStart_toStartOf="parent" />
 
@@ -84,13 +87,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:layout_marginBottom="24dp"
+                android:ellipsize="marquee"
                 android:fontFamily="@font/helvetica"
+                android:marqueeRepeatLimit="marquee_forever"
                 android:maxLines="1"
                 android:text="The Weeknd"
-                android:ellipsize="marquee"
-                android:marqueeRepeatLimit="marquee_forever"
                 android:textColor="#CCCCCC"
                 android:textSize="@dimen/_10ssp"
+                android:transitionName="artist_transition"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 
@@ -257,6 +261,7 @@
                 android:layout_weight="1"
                 android:contentDescription="Play/Pause"
                 android:src="@drawable/ic_play"
+                android:transitionName="play_button_transition"
                 app:backgroundTint="@color/white"
                 app:tint="@color/black" />
 
@@ -306,19 +311,19 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="invisible"
-                    android:src="@drawable/ic_lyrics" />
+                    android:src="@drawable/ic_lyrics"
+                    android:visibility="invisible" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_5sdp"
                     android:layout_marginEnd="@dimen/_5sdp"
+                    android:fontFamily="@font/helveticabold"
                     android:text="Lyrics"
-                    android:fontFamily="@font/helveticabold"
-                    android:textStyle="bold"
                     android:textColor="@color/gray_400"
-                    android:textSize="@dimen/_12ssp" />
+                    android:textSize="@dimen/_12ssp"
+                    android:textStyle="bold" />
 
             </LinearLayout>
 
@@ -336,19 +341,19 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="invisible"
-                    android:src="@drawable/ic_queue" />
+                    android:src="@drawable/ic_queue"
+                    android:visibility="invisible" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_5sdp"
                     android:layout_marginEnd="@dimen/_5sdp"
+                    android:fontFamily="@font/helveticabold"
                     android:text="Queue"
-                    android:fontFamily="@font/helveticabold"
-                    android:textStyle="bold"
                     android:textColor="@color/gray_400"
-                    android:textSize="@dimen/_12ssp" />
+                    android:textSize="@dimen/_12ssp"
+                    android:textStyle="bold" />
 
             </LinearLayout>
 
@@ -365,19 +370,19 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="invisible"
-                    android:src="@drawable/ic_relevant" />
+                    android:src="@drawable/ic_relevant"
+                    android:visibility="invisible" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_5sdp"
                     android:layout_marginEnd="@dimen/_5sdp"
-                    android:text="Relevant"
                     android:fontFamily="@font/helveticabold"
-                    android:textStyle="bold"
+                    android:text="Relevant"
                     android:textColor="@color/gray_400"
-                    android:textSize="@dimen/_12ssp" />
+                    android:textSize="@dimen/_12ssp"
+                    android:textStyle="bold" />
 
             </LinearLayout>
 

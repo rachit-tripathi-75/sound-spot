@@ -92,6 +92,7 @@ public class ApplicationClass extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         player = new ExoPlayer.Builder(this).build();
         mediaSession = new MediaSessionCompat(this, "ApplicationClass");
         mediaSession.setActive(true);
