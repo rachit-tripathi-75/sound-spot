@@ -32,24 +32,33 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.rachit.tripathi75.soundspot.ApplicationClass;
 import com.rachit.tripathi75.soundspot.R;
-import com.rachit.tripathi75.soundspot.classes.ApiClient;
-import com.rachit.tripathi75.soundspot.classes.ApiServices;
 import com.rachit.tripathi75.soundspot.classes.GetLyricsResponse;
 import com.rachit.tripathi75.soundspot.databinding.ActivityMusicOverviewBinding;
 import com.rachit.tripathi75.soundspot.databinding.LyricsBottomSheetBinding;
 import com.rachit.tripathi75.soundspot.databinding.MusicOverviewMoreInfoBottomSheetBinding;
 import com.rachit.tripathi75.soundspot.model.AlbumItem;
 import com.rachit.tripathi75.soundspot.model.BasicDataRecord;
+import com.rachit.tripathi75.soundspot.network.ApiClient;
 import com.rachit.tripathi75.soundspot.network.ApiManager;
+import com.rachit.tripathi75.soundspot.network.ApiServices;
 import com.rachit.tripathi75.soundspot.network.utility.RequestNetwork;
 import com.rachit.tripathi75.soundspot.records.SongResponse;
 import com.rachit.tripathi75.soundspot.records.sharedpref.SavedLibraries;
+import com.rachit.tripathi75.soundspot.responses.GeniusApiSearchResponse;
 import com.rachit.tripathi75.soundspot.services.ActionPlaying;
 import com.rachit.tripathi75.soundspot.services.MusicService;
 import com.rachit.tripathi75.soundspot.utils.SharedPreferenceManager;
 import com.rachit.tripathi75.soundspot.utils.customview.BottomSheetItemView;
 import com.squareup.picasso.Picasso;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
+import org.jsoup.nodes.TextNode;
+import org.jsoup.select.Elements;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -296,6 +305,13 @@ public class MusicOverviewActivity extends AppCompatActivity implements ActionPl
 //        binding.ivShowLyrics.setOnClickListener(view -> {
 //            showLyricsBottomSheetDialog();
 //        });
+
+
+
+        binding.llLyrics.setOnClickListener(view -> {
+            fetchLyrics(getSongTitle(binding.title.getText().toString()) + " " + getPrimaryArtistOfTheSong(binding.description.getText().toString()));
+        });
+
     }
 
 
@@ -315,6 +331,108 @@ public class MusicOverviewActivity extends AppCompatActivity implements ActionPl
 
         player.prepare();
         player.play();
+    }
+
+    private String getSongTitle(String songTitle) {
+        if (songTitle == null) return null;
+        String[] parts = songTitle.split("\\(", 2);
+        return parts[0].trim();
+    }
+
+    private String getPrimaryArtistOfTheSong(String artists) {
+        if (artists == null) {
+            return null;
+        }
+
+        int commaIndex = artists.indexOf(',');
+        if (commaIndex != -1) {
+            return artists.substring(0, commaIndex).trim();
+        } else {
+            return artists;
+        }
+    }
+
+    private void fetchLyrics(String query) {
+        ApiServices.GeniusLyricsApiService geniusLyricsApiService = ApiClient.getClient().create(ApiServices.GeniusLyricsApiService.class);
+        geniusLyricsApiService.searchLyrics(
+                "Bearer u_fIy2Ec7caSXucMz98ZeJeMqg3ofkhF6QpZfeKauACrJsF408F2cLmHvSCm6C33",
+                "application/json",
+                query
+        ).enqueue(new Callback<GeniusApiSearchResponse>() {
+            @Override
+            public void onResponse(Call<GeniusApiSearchResponse> call, Response<GeniusApiSearchResponse> response) {
+                if (response.isSuccessful()) {
+                    if (response.body() != null && !response.body().getResponse().getHits().isEmpty()) {
+                        GeniusApiSearchResponse s = response.body();
+                        Gson gson = new Gson();
+                        Log.d("geniusLyricsTAG", gson.toJson(s.getResponse().getHits().get(0).getResult().getUrl()));
+                        scrapLyrics(s.getResponse().getHits().get(0).getResult().getUrl());
+                    }
+                } else {
+                    Log.d("geniusLyricsTAG", "onResponse, response: " + new Gson().toJson(response.body()));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GeniusApiSearchResponse> call, Throwable t) {
+                Log.d("geniusLyricsTAG", "onFailure, error: " + t.getMessage());
+            }
+        });
+    }
+
+    private void scrapLyrics(String songLyricsUrl) {
+        new Thread(() -> {
+            try {
+                Document doc = Jsoup.connect(songLyricsUrl)
+                        .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
+                                "(KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36")
+                        .referrer("http://www.google.com")
+                        .get();
+
+                Elements containers = doc.select("div[class^=Lyrics__Container]");
+
+                StringBuilder lyricsBuilder = new StringBuilder();
+                boolean startCollecting = false;
+
+                for (Element container : containers) {
+                    for (Node node : container.childNodes()) {
+                        String text;
+                        if (node instanceof TextNode) {
+                            text = ((TextNode) node).text();
+                        } else if (node.nodeName().equals("br")) {
+                            lyricsBuilder.append("\n");
+                            continue;
+                        } else if (node instanceof Element) {
+                            text = ((Element) node).text();
+                        } else {
+                            continue;
+                        }
+
+                        // Trigger collection only when we find something like [Intro], [Verse 1], etc.
+                        if (!startCollecting && text.matches("\\[.*\\]")) {
+                            startCollecting = true;
+                        }
+
+                        if (startCollecting) {
+                            lyricsBuilder.append(text).append("\n");
+                        }
+                    }
+
+                    if (startCollecting) {
+                        lyricsBuilder.append("\n\n");
+                    }
+                }
+
+                String lyrics = lyricsBuilder.toString().trim();
+
+                runOnUiThread(() -> {
+                    Log.d("geniusLyricsTAG", "lyrics: " + lyrics);
+                });
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     private void showLyricsBottomSheetDialog() {
@@ -341,42 +459,42 @@ public class MusicOverviewActivity extends AppCompatActivity implements ActionPl
 
     private void getLyrics(LyricsBottomSheetBinding lyricsBottomSheetDialog, String songTitle, String artists) {
 
-        lyricsBottomSheetDialog.progressBar.setVisibility(View.VISIBLE);
-
-        ApiServices.GetLyricsApiService getLyricsApiService = ApiClient.getClient().create(ApiServices.GetLyricsApiService.class);
-        Call<GetLyricsResponse> call = getLyricsApiService.getLyrics(
-                "application/json",
-                songTitle,
-                artists
-        );
-
-        call.enqueue(new Callback<GetLyricsResponse>() {
-            @Override
-            public void onResponse(Call<GetLyricsResponse> call, Response<GetLyricsResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    GetLyricsResponse s1 = response.body();
-                    Log.d("lyricsTAG", s1.getLyrics());
-                    lyricsBottomSheetDialog.progressBar.setVisibility(View.GONE);
-                    lyricsBottomSheetDialog.scrollView.setVisibility(View.VISIBLE);
-                    lyricsBottomSheetDialog.tvLyrics.setMovementMethod(new ScrollingMovementMethod());
-                    lyricsBottomSheetDialog.tvLyrics.setText(formatLyrics(s1.getLyrics()));
-//                    tvLyrics.setText(formatLyrics(s1.getLyrics()));
-                } else {
-                    Log.d("lyricsTAG", "response code: " + response.code());
-                    lyricsBottomSheetDialog.progressBar.setVisibility(View.GONE);
-                    lyricsBottomSheetDialog.scrollView.setVisibility(View.VISIBLE);
-                    lyricsBottomSheetDialog.tvLyrics.setText("Lyrics are not available for this song");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<GetLyricsResponse> call, Throwable t) {
-                Log.d("lyricsTAG", t.getMessage());
-                lyricsBottomSheetDialog.progressBar.setVisibility(View.GONE);
-                lyricsBottomSheetDialog.scrollView.setVisibility(View.VISIBLE);
-                lyricsBottomSheetDialog.tvLyrics.setText("Oops!!! Something went wrong");
-            }
-        });
+//        lyricsBottomSheetDialog.progressBar.setVisibility(View.VISIBLE);
+//
+//        ApiServices.GetLyricsApiService getLyricsApiService = ApiClient.getClient().create(ApiServices.GetLyricsApiService.class);
+//        Call<GetLyricsResponse> call = getLyricsApiService.getLyrics(
+//                "application/json",
+//                songTitle,
+//                artists
+//        );
+//
+//        call.enqueue(new Callback<GetLyricsResponse>() {
+//            @Override
+//            public void onResponse(Call<GetLyricsResponse> call, Response<GetLyricsResponse> response) {
+//                if (response.isSuccessful() && response.body() != null) {
+//                    GetLyricsResponse s1 = response.body();
+//                    Log.d("lyricsTAG", s1.getLyrics());
+//                    lyricsBottomSheetDialog.progressBar.setVisibility(View.GONE);
+//                    lyricsBottomSheetDialog.scrollView.setVisibility(View.VISIBLE);
+//                    lyricsBottomSheetDialog.tvLyrics.setMovementMethod(new ScrollingMovementMethod());
+//                    lyricsBottomSheetDialog.tvLyrics.setText(formatLyrics(s1.getLyrics()));
+////                    tvLyrics.setText(formatLyrics(s1.getLyrics()));
+//                } else {
+//                    Log.d("lyricsTAG", "response code: " + response.code());
+//                    lyricsBottomSheetDialog.progressBar.setVisibility(View.GONE);
+//                    lyricsBottomSheetDialog.scrollView.setVisibility(View.VISIBLE);
+//                    lyricsBottomSheetDialog.tvLyrics.setText("Lyrics are not available for this song");
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<GetLyricsResponse> call, Throwable t) {
+//                Log.d("lyricsTAG", t.getMessage());
+//                lyricsBottomSheetDialog.progressBar.setVisibility(View.GONE);
+//                lyricsBottomSheetDialog.scrollView.setVisibility(View.VISIBLE);
+//                lyricsBottomSheetDialog.tvLyrics.setText("Oops!!! Something went wrong");
+//            }
+//        });
     }
 
     private String formatLyrics(String rawLyrics) {

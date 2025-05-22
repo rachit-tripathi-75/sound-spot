@@ -1,15 +1,24 @@
 package com.rachit.tripathi75.soundspot.activities;
 
+
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
@@ -17,11 +26,13 @@ import com.google.gson.Gson;
 import com.rachit.tripathi75.soundspot.ApplicationClass;
 import com.rachit.tripathi75.soundspot.R;
 import com.rachit.tripathi75.soundspot.adapters.ActivityListSongsItemAdapter;
+import com.rachit.tripathi75.soundspot.adapters.AlbumTrackAdapter;
 import com.rachit.tripathi75.soundspot.adapters.UserCreatedSongsListAdapter;
 import com.rachit.tripathi75.soundspot.databinding.ActivityListBinding;
 import com.rachit.tripathi75.soundspot.databinding.ActivityListMoreInfoBottomSheetBinding;
 import com.rachit.tripathi75.soundspot.databinding.UserCreatedListActivityMoreBottomSheetBinding;
 import com.rachit.tripathi75.soundspot.model.AlbumItem;
+import com.rachit.tripathi75.soundspot.model.AlbumTrack;
 import com.rachit.tripathi75.soundspot.model.BasicDataRecord;
 import com.rachit.tripathi75.soundspot.network.ApiManager;
 import com.rachit.tripathi75.soundspot.network.utility.RequestNetwork;
@@ -39,22 +50,47 @@ import java.util.List;
 
 public class ListActivity extends AppCompatActivity {
 
-    ActivityListBinding binding;
+
+
+    private static final String PREF_NAME = "ThemePreferences";
+    private static final String KEY_THEME = "current_theme";
+    private static final String THEME_DARK = "dark";
+    private static final String THEME_PURPLE = "purple";
+
+
+    private AlbumTrackAdapter trackAdapter;
+
+    private String currentTheme = THEME_DARK;
+    private float initialAlbumArtSize;
+    private float initialAlbumArtX;
+    private float initialAlbumArtY;
+
+
+
+
+
+    private ActivityListBinding binding;
 
     private final List<String> trackQueue = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Load saved theme before setting content view
+        loadSavedTheme();
+
         super.onCreate(savedInstanceState);
         binding = ActivityListBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        applyTheme(false);
 
-        binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        binding.addMoreSongs.setVisibility(View.GONE);
+        initialisers();
+
+        binding.rvAlbumTracks.setLayoutManager(new LinearLayoutManager(this));
+//        binding.addMoreSongs.setVisibility(View.GONE);
 
         Log.i("ListActivity", "onCreate: reached ListActivity");
 
-        showShimmerData();
+//        showShimmerData();
 
         binding.playAllBtn.setOnClickListener(view -> {
             if (!trackQueue.isEmpty()) {
@@ -65,50 +101,278 @@ public class ListActivity extends AppCompatActivity {
         });
         final SharedPreferenceManager sharedPreferenceManager = SharedPreferenceManager.getInstance(ListActivity.this);
 
-        binding.addToLibrary.setOnClickListener(view -> {
-            if (albumItem == null) return;
+//        binding.addToLibrary.setOnClickListener(view -> {
+//            if (albumItem == null) return;
+//
+//            if (isAlbumInLibrary(albumItem, sharedPreferenceManager.getSavedLibrariesData())) {
+//
+//                new MaterialAlertDialogBuilder(ListActivity.this)
+//                        .setTitle("Are you sure?")
+//                        .setMessage("Do you want to remove this album from your library?")
+//                        .setPositiveButton("Yes", (dialogInterface, i) -> {
+//                            int index = getAlbumIndexInLibrary(albumItem, sharedPreferenceManager.getSavedLibrariesData());
+//                            if (index == -1) return;
+//                            sharedPreferenceManager.removeLibraryFromSavedLibraries(index);
+//                            Snackbar.make(binding.getRoot(), "Removed from Library", Snackbar.LENGTH_SHORT).show();
+//                            updateAlbumInLibraryStatus();
+//                        })
+//                        .setNegativeButton("No", (dialogInterface, i) -> {
+//
+//                        })
+//                        .show();
+//            } else {
+//                SavedLibraries.Library library = new SavedLibraries.Library(
+//                        albumItem.id(),
+//                        false,
+//                        isAlbum,
+//                        binding.albumTitle.getText().toString(),
+//                        albumItem.albumCover(),
+//                        binding.albumSubTitle.getText().toString(),
+//                        new ArrayList<>()
+//                );
+//                sharedPreferenceManager.addLibraryToSavedLibraries(library);
+//                Snackbar.make(binding.getRoot(), "Added to Library", Snackbar.LENGTH_SHORT).show();
+//            }
+//
+//            updateAlbumInLibraryStatus();
+//        });
 
-            if (isAlbumInLibrary(albumItem, sharedPreferenceManager.getSavedLibrariesData())) {
-
-                new MaterialAlertDialogBuilder(ListActivity.this)
-                        .setTitle("Are you sure?")
-                        .setMessage("Do you want to remove this album from your library?")
-                        .setPositiveButton("Yes", (dialogInterface, i) -> {
-                            int index = getAlbumIndexInLibrary(albumItem, sharedPreferenceManager.getSavedLibrariesData());
-                            if (index == -1) return;
-                            sharedPreferenceManager.removeLibraryFromSavedLibraries(index);
-                            Snackbar.make(binding.getRoot(), "Removed from Library", Snackbar.LENGTH_SHORT).show();
-                            updateAlbumInLibraryStatus();
-                        })
-                        .setNegativeButton("No", (dialogInterface, i) -> {
-
-                        })
-                        .show();
-            } else {
-                SavedLibraries.Library library = new SavedLibraries.Library(
-                        albumItem.id(),
-                        false,
-                        isAlbum,
-                        binding.albumTitle.getText().toString(),
-                        albumItem.albumCover(),
-                        binding.albumSubTitle.getText().toString(),
-                        new ArrayList<>()
-                );
-                sharedPreferenceManager.addLibraryToSavedLibraries(library);
-                Snackbar.make(binding.getRoot(), "Added to Library", Snackbar.LENGTH_SHORT).show();
-            }
-
-            updateAlbumInLibraryStatus();
-        });
-
-        binding.addMoreSongs.setOnClickListener(view -> {
-            startActivity(new Intent(ListActivity.this, SearchActivity.class));
-        });
-
-        binding.moreIcon.setOnClickListener(view -> onMoreIconClicked());
+//        binding.addMoreSongs.setOnClickListener(view -> {
+//            startActivity(new Intent(ListActivity.this, SearchActivity.class));
+//        });
+//
+//        binding.moreIcon.setOnClickListener(view -> onMoreIconClicked());
 
         showData();
     }
+
+    private void initialisers() {
+        initViews();
+        setupToolbar();
+        setupAlbumArtAnimation();
+        setupRecyclerView();
+    }
+
+    private void initViews() {
+
+
+        // Set click listener for play button
+        binding.playAllBtn.setOnClickListener(v -> {
+            // Implement play functionality
+            binding.playAllBtn.animate()
+                    .scaleX(0.8f)
+                    .scaleY(0.8f)
+                    .setDuration(100)
+                    .withEndAction(() ->
+                            binding.playAllBtn.animate()
+                                    .scaleX(1f)
+                                    .scaleY(1f)
+                                    .setDuration(100)
+                                    .start()
+                    ).start();
+        });
+    }
+
+    private void setupToolbar() {
+        setSupportActionBar(binding.toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
+
+        binding.toolbar.setNavigationOnClickListener(v -> onBackPressed());
+    }
+
+    private void setupAlbumArtAnimation() {
+        // Get initial size for animations
+        binding.albumArtCard.post(() -> {
+            initialAlbumArtSize = binding.albumArtCard.getWidth();
+            initialAlbumArtX = binding.albumArtCard.getX();
+            initialAlbumArtY = binding.albumArtCard.getY();
+        });
+
+        // Set up scroll listener for animations
+        binding.appBar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                // Calculate scroll percentage (0 to 1)
+                float scrollPercentage = Math.abs(verticalOffset) / (float) appBarLayout.getTotalScrollRange();
+
+                // Scale album art based on scroll
+                float scale = 1f - (0.4f * scrollPercentage); // Scale down to 60% of original size
+                binding.albumArtCard.setScaleX(scale);
+                binding.albumArtCard.setScaleY(scale);
+
+                // Adjust alpha for fade effect
+                float alpha = 1f - (0.2f * scrollPercentage); // Fade to 80% opacity
+                binding.albumArtCard.setAlpha(alpha);
+
+                // Move album art up slightly as it shrinks
+                float translationY = -40 * scrollPercentage;
+                binding.albumArtContainer.setTranslationY(translationY);
+            }
+        });
+    }
+
+    private void setupRecyclerView() {
+        binding.rvAlbumTracks.setLayoutManager(new LinearLayoutManager(this));
+
+        // Create sample track data
+//        List<AlbumTrack> tracks = new ArrayList<>();
+//        tracks.add(new AlbumTrack(1, "2 Much", "Justin Bieber"));
+//        tracks.add(new AlbumTrack(2, "Deserve You", "Justin Bieber"));
+//        tracks.add(new AlbumTrack(3, "As I Am (feat. Khalid)", "Justin Bieber, Khalid"));
+//        tracks.add(new AlbumTrack(4, "Off My Face", "Justin Bieber"));
+//        tracks.add(new AlbumTrack(5, "Holy", "Justin Bieber"));
+//        tracks.add(new AlbumTrack(6, "Unstable", "Justin Bieber"));
+//        tracks.add(new AlbumTrack(7, "MLK Interlude", "Justin Bieber"));
+//        tracks.add(new AlbumTrack(8, "Die For You", "Justin Bieber"));
+//        tracks.add(new AlbumTrack(9, "Hold On", "Justin Bieber"));
+//        tracks.add(new AlbumTrack(10, "Somebody", "Justin Bieber"));
+//
+//        // Create and set adapter
+//        trackAdapter = new AlbumTrackAdapter(this, tracks, currentTheme);
+//        binding.rvAlbumTracks.setAdapter(trackAdapter);
+
+        // Add animation to RecyclerView items
+        binding.rvAlbumTracks.setLayoutAnimation(
+                android.view.animation.AnimationUtils.loadLayoutAnimation(
+                        this, R.anim.layout_animation_slide_from_bottom));
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_album_details, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.action_theme) {
+            toggleTheme();
+            return true;
+        } else if (item.getItemId() == R.id.action_more) {
+            // Handle more options
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void toggleTheme() {
+        // Toggle between dark and purple themes
+        currentTheme = THEME_DARK.equals(currentTheme) ? THEME_PURPLE : THEME_DARK;
+
+        // Save the new theme preference
+        saveThemePreference();
+
+        // Apply the theme with animation
+        applyTheme(true);
+
+        // Update the RecyclerView adapter
+        if (trackAdapter != null) {
+            trackAdapter.updateTheme(currentTheme);
+        }
+    }
+
+    private void applyTheme(boolean animate) {
+        int fromColor, toColor;
+        int fromSurfaceColor, toSurfaceColor;
+        int fromTextColor, toTextColor;
+        int fromSecondaryTextColor, toSecondaryTextColor;
+
+        if (THEME_DARK.equals(currentTheme)) {
+            // Switch to dark theme
+            setTheme(R.style.Theme_MusicApp_Dark);
+            fromColor = ContextCompat.getColor(this, R.color.purple_background);
+            toColor = ContextCompat.getColor(this, R.color.dark_background);
+            fromSurfaceColor = ContextCompat.getColor(this, R.color.purple_surface);
+            toSurfaceColor = ContextCompat.getColor(this, R.color.dark_surface);
+            fromTextColor = ContextCompat.getColor(this, R.color.purple_text_primary);
+            toTextColor = ContextCompat.getColor(this, R.color.white);
+            fromSecondaryTextColor = ContextCompat.getColor(this, R.color.purple_text_secondary);
+            toSecondaryTextColor = ContextCompat.getColor(this, R.color.dark_text_secondary);
+        } else {
+            // Switch to purple theme
+            setTheme(R.style.Theme_MusicApp_Purple);
+            fromColor = ContextCompat.getColor(this, R.color.dark_background);
+            toColor = ContextCompat.getColor(this, R.color.purple_background);
+            fromSurfaceColor = ContextCompat.getColor(this, R.color.dark_surface);
+            toSurfaceColor = ContextCompat.getColor(this, R.color.purple_surface);
+            fromTextColor = ContextCompat.getColor(this, R.color.white);
+            toTextColor = ContextCompat.getColor(this, R.color.purple_text_primary);
+            fromSecondaryTextColor = ContextCompat.getColor(this, R.color.dark_text_secondary);
+            toSecondaryTextColor = ContextCompat.getColor(this, R.color.purple_text_secondary);
+        }
+
+        if (animate && binding.main != null) {
+            // Animate background color change
+            ValueAnimator backgroundColorAnimation = ValueAnimator.ofObject(
+                    new ArgbEvaluator(), fromColor, toColor);
+            backgroundColorAnimation.setDuration(500);
+            backgroundColorAnimation.addUpdateListener(animator ->
+                    binding.main.setBackgroundColor((int) animator.getAnimatedValue()));
+            backgroundColorAnimation.start();
+
+            // Animate text colors
+            ValueAnimator textColorAnimation = ValueAnimator.ofObject(
+                    new ArgbEvaluator(), fromTextColor, toTextColor);
+            textColorAnimation.setDuration(500);
+            textColorAnimation.addUpdateListener(animator -> {
+                int color = (int) animator.getAnimatedValue();
+                binding.albumTitle.setTextColor(color);
+                binding.toolbar.setTitleTextColor(color);
+            });
+            textColorAnimation.start();
+
+            // Animate secondary text colors
+            ValueAnimator secondaryTextColorAnimation = ValueAnimator.ofObject(
+                    new ArgbEvaluator(), fromSecondaryTextColor, toSecondaryTextColor);
+            secondaryTextColorAnimation.setDuration(500);
+            secondaryTextColorAnimation.addUpdateListener(animator -> {
+                int color = (int) animator.getAnimatedValue();
+                binding.albumArtist.setTextColor(color);
+            });
+            secondaryTextColorAnimation.start();
+        } else if (binding.main != null) {
+            // Apply colors immediately without animation
+            binding.main.setBackgroundColor(toColor);
+            binding.albumTitle.setTextColor(toTextColor);
+            binding.albumArtist.setTextColor(toSecondaryTextColor);
+            binding.toolbar.setTitleTextColor(toTextColor);
+        }
+    }
+
+    private void saveThemePreference() {
+        SharedPreferences preferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString(KEY_THEME, currentTheme);
+        editor.apply();
+    }
+
+    private void loadSavedTheme() {
+        SharedPreferences preferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
+        currentTheme = preferences.getString(KEY_THEME, THEME_DARK);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     private void onMoreIconClicked() {
         if (albumItem == null) return;
@@ -122,7 +386,7 @@ public class ListActivity extends AppCompatActivity {
         final ActivityListMoreInfoBottomSheetBinding _binding = ActivityListMoreInfoBottomSheetBinding.inflate(getLayoutInflater());
 
         _binding.albumTitle.setText(binding.albumTitle.getText().toString());
-        _binding.albumSubTitle.setText(binding.albumSubTitle.getText().toString());
+        _binding.albumSubTitle.setText(binding.albumArtist.getText().toString());
         Picasso.get().load(Uri.parse(albumItem.albumCover())).into(_binding.coverImage);
 
         final SharedPreferenceManager sharedPreferenceManager = SharedPreferenceManager.getInstance(ListActivity.this);
@@ -139,10 +403,12 @@ public class ListActivity extends AppCompatActivity {
                 _binding.addToLibrary.getIconImageView().setImageResource(R.drawable.round_add_24);
             }
         }
-        _binding.addToLibrary.setOnClickListener(view -> {
-            bottomSheetDialog.dismiss();
-            binding.addToLibrary.performClick();
-        });
+
+
+//        _binding.addToLibrary.setOnClickListener(view -> {
+//            bottomSheetDialog.dismiss();
+//            binding.addToLibrary.performClick();
+//        });
 
         for (ArtistData artist : artistData) {
             try {
@@ -174,12 +440,12 @@ public class ListActivity extends AppCompatActivity {
         final UserCreatedListActivityMoreBottomSheetBinding _binding = UserCreatedListActivityMoreBottomSheetBinding.inflate(getLayoutInflater());
 
         _binding.albumTitle.setText(binding.albumTitle.getText().toString());
-        _binding.albumSubTitle.setText(binding.albumSubTitle.getText().toString());
+        _binding.albumSubTitle.setText(binding.albumArtist.getText().toString());
         Picasso.get().load(Uri.parse(albumItem.albumCover())).into(_binding.coverImage);
 
         _binding.removeLibrary.setOnClickListener(view -> {
             bottomSheetDialog.dismiss();
-            binding.addToLibrary.performClick();
+//            binding.addToLibrary.performClick();
         });
 
         bottomSheetDialog.setContentView(_binding.getRoot());
@@ -188,13 +454,13 @@ public class ListActivity extends AppCompatActivity {
     }
 
     private void updateAlbumInLibraryStatus() {
-        SharedPreferenceManager sharedPreferenceManager = SharedPreferenceManager.getInstance(ListActivity.this);
-        if (sharedPreferenceManager.getSavedLibrariesData() == null)
-            binding.addToLibrary.setImageResource(R.drawable.round_add_24);
-        else {
-            final SavedLibraries savedLibraries = sharedPreferenceManager.getSavedLibrariesData();
-            binding.addToLibrary.setImageResource(isAlbumInLibrary(albumItem, savedLibraries) ? R.drawable.round_done_24 : R.drawable.round_add_24);
-        }
+//        SharedPreferenceManager sharedPreferenceManager = SharedPreferenceManager.getInstance(ListActivity.this);
+//        if (sharedPreferenceManager.getSavedLibrariesData() == null)
+//            binding.addToLibrary.setImageResource(R.drawable.round_add_24);
+//        else {
+//            final SavedLibraries savedLibraries = sharedPreferenceManager.getSavedLibrariesData();
+////            binding.addToLibrary.setImageResource(isAlbumInLibrary(albumItem, savedLibraries) ? R.drawable.round_done_24 : R.drawable.round_add_24);
+//        }
     }
 
     @SuppressLint("NewApi")
@@ -224,31 +490,31 @@ public class ListActivity extends AppCompatActivity {
         return index;
     }
 
-    private void showShimmerData() {
-        List<SongResponse.Song> data = new ArrayList<>();
-        for (int i = 0; i < 11; i++) {
-            data.add(new SongResponse.Song(
-                    "<shimmer>",
-                    "",
-                    "",
-                    "",
-                    "",
-                    0.0,
-                    "",
-                    false,
-                    0,
-                    "",
-                    false,
-                    "",
-                    null,
-                    "",
-                    "",
-                    null,
-                    null, null, null
-            ));
-        }
-        binding.recyclerView.setAdapter(new ActivityListSongsItemAdapter(data));
-    }
+//    private void showShimmerData() {
+//        List<SongResponse.Song> data = new ArrayList<>();
+//        for (int i = 0; i < 11; i++) {
+//            data.add(new SongResponse.Song(
+//                    "<shimmer>",
+//                    "",
+//                    "",
+//                    "",
+//                    "",
+//                    0.0,
+//                    "",
+//                    false,
+//                    0,
+//                    "",
+//                    false,
+//                    "",
+//                    null,
+//                    "",
+//                    "",
+//                    null,
+//                    null, null, null
+//            ));
+//        }
+//        binding.recyclerView.setAdapter(new ActivityListSongsItemAdapter(data));
+//    }
 
     private AlbumItem albumItem;
     private boolean isAlbum = false;
@@ -258,9 +524,9 @@ public class ListActivity extends AppCompatActivity {
         albumItem = new Gson().fromJson(getIntent().getExtras().getString("data"), AlbumItem.class);
         updateAlbumInLibraryStatus();
         binding.albumTitle.setText(albumItem.albumTitle());
-        binding.albumSubTitle.setText(albumItem.albumSubTitle());
+        binding.albumArtist.setText(albumItem.albumSubTitle());
         if (!albumItem.albumCover().isBlank())
-            Picasso.get().load(Uri.parse(albumItem.albumCover())).into(binding.albumCover);
+            Picasso.get().load(Uri.parse(albumItem.albumCover())).into(binding.albumArt);
 
         final ApiManager apiManager = new ApiManager(this);
         final SharedPreferenceManager sharedPreferenceManager = SharedPreferenceManager.getInstance(this);
@@ -322,10 +588,10 @@ public class ListActivity extends AppCompatActivity {
 
         isUserCreated = true;
 
-        binding.shareIcon.setVisibility(View.INVISIBLE);
+//        binding.shareIcon.setVisibility(View.INVISIBLE);
 //        binding.moreIcon.setVisibility(View.INVISIBLE);
-        binding.addToLibrary.setVisibility(View.INVISIBLE);
-        binding.addMoreSongs.setVisibility(View.VISIBLE);
+//        binding.addToLibrary.setVisibility(View.INVISIBLE);
+//        binding.addMoreSongs.setVisibility(View.VISIBLE);
 
         final SharedPreferenceManager sharedPreferenceManager = SharedPreferenceManager.getInstance(this);
         SavedLibraries savedLibraries = sharedPreferenceManager.getSavedLibrariesData();
@@ -340,32 +606,32 @@ public class ListActivity extends AppCompatActivity {
         if (library == null) finish();
         if (library != null) {
             binding.albumTitle.setText(library.name());
-            binding.albumSubTitle.setText(library.description());
-            Picasso.get().load(Uri.parse(library.image())).into(binding.albumCover);
-            binding.recyclerView.setAdapter(new UserCreatedSongsListAdapter(library.songs()));
+            binding.albumArtist.setText(library.description());
+            Picasso.get().load(Uri.parse(library.image())).into(binding.albumArt);
+            binding.rvAlbumTracks.setAdapter(new UserCreatedSongsListAdapter(library.songs()));
             for (SavedLibraries.Library.Songs song : library.songs())
                 trackQueue.add(song.id());
         }
 
     }
-
+//
     private void onAlbumFetched(AlbumSearch albumSearch) {
         binding.albumTitle.setText(albumSearch.data().name());
-        binding.albumSubTitle.setText(albumSearch.data().description());
-        Picasso.get().load(Uri.parse(albumSearch.data().image().get(albumSearch.data().image().size() - 1).url())).into(binding.albumCover);
-        binding.recyclerView.setAdapter(new ActivityListSongsItemAdapter(albumSearch.data().songs()));
+        binding.albumArtist.setText(albumSearch.data().description());
+        Picasso.get().load(Uri.parse(albumSearch.data().image().get(albumSearch.data().image().size() - 1).url())).into(binding.albumArt);
+        binding.rvAlbumTracks.setAdapter(new AlbumTrackAdapter(this, albumSearch.data().songs(), currentTheme));
         for (SongResponse.Song song : albumSearch.data().songs())
             trackQueue.add(song.id());
 
-        //((ApplicationClass)getApplicationContext()).setTrackQueue(trackQueue);
-        binding.shareIcon.setOnClickListener(view -> {
-            if (albumSearch.data().url().isBlank()) return;
-            Intent sendIntent = new Intent();
-            sendIntent.setAction(Intent.ACTION_SEND);
-            sendIntent.putExtra(Intent.EXTRA_TEXT, albumSearch.data().url());
-            sendIntent.setType("text/plain");
-            startActivity(sendIntent);
-        });
+        ((ApplicationClass)getApplicationContext()).setTrackQueue(trackQueue);
+//        binding.shareIcon.setOnClickListener(view -> {
+//            if (albumSearch.data().url().isBlank()) return;
+//            Intent sendIntent = new Intent();
+//            sendIntent.setAction(Intent.ACTION_SEND);
+//            sendIntent.putExtra(Intent.EXTRA_TEXT, albumSearch.data().url());
+//            sendIntent.setType("text/plain");
+//            startActivity(sendIntent);
+//        });
 
 //        for (SongResponse.Artist artist : albumSearch.data().artist().all()) {
 //            artistData.add(new ArtistData(artist.name(), artist.id(),
@@ -384,24 +650,24 @@ public class ListActivity extends AppCompatActivity {
             ));
         }
     }
-
+//
     private void onPlaylistFetched(PlaylistSearch playlistSearch) {
         binding.albumTitle.setText(playlistSearch.data().name());
-        binding.albumSubTitle.setText(playlistSearch.data().description());
-        Picasso.get().load(Uri.parse(playlistSearch.data().image().get(playlistSearch.data().image().size() - 1).url())).into(binding.albumCover);
-        binding.recyclerView.setAdapter(new ActivityListSongsItemAdapter(playlistSearch.data().songs()));
+        binding.albumArtist.setText(playlistSearch.data().description());
+        Picasso.get().load(Uri.parse(playlistSearch.data().image().get(playlistSearch.data().image().size() - 1).url())).into(binding.albumArt);
+        binding.rvAlbumTracks.setAdapter(new AlbumTrackAdapter(this, playlistSearch.data().songs(), currentTheme));
         for (SongResponse.Song song : playlistSearch.data().songs())
             trackQueue.add(song.id());
 
-        //((ApplicationClass)getApplicationContext()).setTrackQueue(trackQueue);
-        binding.shareIcon.setOnClickListener(view -> {
-            if (playlistSearch.data().url().isBlank()) return;
-            Intent sendIntent = new Intent();
-            sendIntent.setAction(Intent.ACTION_SEND);
-            sendIntent.putExtra(Intent.EXTRA_TEXT, playlistSearch.data().url());
-            sendIntent.setType("text/plain");
-            startActivity(sendIntent);
-        });
+        ((ApplicationClass)getApplicationContext()).setTrackQueue(trackQueue);
+//        binding.shareIcon.setOnClickListener(view -> {
+//            if (playlistSearch.data().url().isBlank()) return;
+//            Intent sendIntent = new Intent();
+//            sendIntent.setAction(Intent.ACTION_SEND);
+//            sendIntent.putExtra(Intent.EXTRA_TEXT, playlistSearch.data().url());
+//            sendIntent.setType("text/plain");
+//            startActivity(sendIntent);
+//        });
 
         for (PlaylistSearch.Data.Artist artist : playlistSearch.data().artists()) {
             artistData.add(new ArtistData(artist.name(), artist.id(),

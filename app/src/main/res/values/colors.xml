@@ -102,7 +102,6 @@
     <color name="nav_unselected">@color/light_gray</color>
 
 
-
     <color name="purple_accent">#8A2BE2</color>
     <color name="card_background">#1E1433</color>
     <color name="apple_white">#FFFFFF</color>
@@ -110,6 +109,19 @@
     <color name="deezer_blue">#00A8E1</color>
     <color name="success_green">#10B981</color>
     <color name="info_blue">#3B82F6</color>
+
+
+
+    <!-- Dark theme colors -->
+    <color name="dark_background">#121212</color>
+    <color name="dark_surface">#1E1E1E</color>
+    <color name="dark_text_secondary">#B3FFFFFF</color> <!-- 70% white -->
+
+    <!-- Purple theme colors -->
+    <color name="purple_background">#1A0033</color>
+    <color name="purple_surface">#2D0A4F</color>
+    <color name="purple_text_primary">#F2E6FF</color>
+    <color name="purple_text_secondary">#D1B3FF</color>
 
 
 </resources>

@@ -11,6 +11,11 @@
 <!--        android:title="Search" />-->
 
     <item
+        android:id="@+id/itemLyra"
+        android:icon="@drawable/sparkle"
+        android:title="Lyra" />
+
+    <item
         android:id="@+id/itemImportPlaylist"
         android:icon="@drawable/importplaylist"
         android:title="Import" />

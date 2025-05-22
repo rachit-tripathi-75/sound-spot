@@ -49,4 +49,42 @@
         <item name="android:statusBarColor">#00000000</item>
         <item name="android:windowContentOverlay">@null</item>
     </style>
+
+
+    <!-- Base application theme. -->
+    <style name="Theme.MusicApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <!-- Customize your theme here. -->
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
+    <!-- Dark theme -->
+    <style name="Theme.MusicApp.Dark" parent="Theme.MusicApp">
+        <item name="android:windowBackground">@color/dark_background</item>
+        <item name="colorSurface">@color/dark_surface</item>
+        <item name="colorOnSurface">@color/white</item>
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColorSecondary">@color/dark_text_secondary</item>
+    </style>
+
+    <!-- Purple theme -->
+    <style name="Theme.MusicApp.Purple" parent="Theme.MusicApp">
+        <item name="android:windowBackground">@color/purple_background</item>
+        <item name="colorSurface">@color/purple_surface</item>
+        <item name="colorOnSurface">@color/purple_text_primary</item>
+        <item name="android:textColorPrimary">@color/purple_text_primary</item>
+        <item name="android:textColorSecondary">@color/purple_text_secondary</item>
+    </style>
+
+
 </resources>

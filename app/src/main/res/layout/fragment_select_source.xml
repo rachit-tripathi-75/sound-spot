@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_dark">
+    android:background="@color/black">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -71,10 +70,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
-            android:foreground="?attr/selectableItemBackground"
-            app:cardBackgroundColor="@color/card_background"
+            app:cardBackgroundColor="@color/background_dark"
             app:cardCornerRadius="12dp"
-            app:cardElevation="0dp"
+            app:cardElevation="10dp"
             app:layout_columnWeight="1"
             app:layout_rowWeight="1">
 
@@ -89,7 +87,7 @@
                     android:layout_width="64dp"
                     android:layout_height="64dp"
                     android:background="@drawable/bg_circle"
-                    android:backgroundTint="@color/spotify_green"
+
                     android:contentDescription="@string/spotify"
                     android:padding="16dp"
                     android:src="@drawable/spotify" />
@@ -109,9 +107,9 @@
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
             android:foreground="?attr/selectableItemBackground"
-            app:cardBackgroundColor="@color/card_background"
+            app:cardBackgroundColor="@color/background_dark"
             app:cardCornerRadius="12dp"
-            app:cardElevation="0dp"
+            app:cardElevation="10dp"
             app:layout_columnWeight="1"
             app:layout_rowWeight="1">
 
@@ -128,8 +126,8 @@
                     android:background="@drawable/bg_circle"
                     android:backgroundTint="@color/apple_white"
                     android:contentDescription="@string/apple_music"
-                    android:padding="16dp"
-                    android:src="@drawable/spotify" />
+                    android:padding="@dimen/_12sdp"
+                    android:src="@drawable/applelogo" />
 
                 <TextView
                     style="@style/BodyText"
@@ -146,7 +144,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
             android:foreground="?attr/selectableItemBackground"
-            app:cardBackgroundColor="@color/card_background"
+            app:cardBackgroundColor="@color/background_dark"
             app:cardCornerRadius="12dp"
             app:cardElevation="0dp"
             app:layout_columnWeight="1"
@@ -164,16 +162,16 @@
                     android:layout_height="64dp"
                     android:background="@drawable/bg_circle"
                     android:backgroundTint="@color/deezer_blue"
-                    android:contentDescription="@string/deezer"
+                    android:contentDescription="@string/jiosaavn"
                     android:padding="16dp"
-                    android:src="@drawable/spotify" />
+                    android:src="@drawable/jiosaavnlogo" />
 
                 <TextView
                     style="@style/BodyText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="@string/deezer" />
+                    android:text="@string/jiosaavn" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -183,9 +181,9 @@
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
             android:foreground="?attr/selectableItemBackground"
-            app:cardBackgroundColor="@color/card_background"
+            app:cardBackgroundColor="@color/background_dark"
             app:cardCornerRadius="12dp"
-            app:cardElevation="0dp"
+            app:cardElevation="10dp"
             app:layout_columnWeight="1"
             app:layout_rowWeight="1">
 
@@ -200,10 +198,9 @@
                     android:layout_width="64dp"
                     android:layout_height="64dp"
                     android:background="@drawable/bg_circle"
-                    android:backgroundTint="@color/amazon_orange"
                     android:contentDescription="@string/amazon_music"
-                    android:padding="16dp"
-                    android:src="@drawable/spotify" />
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/amazonmusiclogo" />
 
                 <TextView
                     style="@style/BodyText"

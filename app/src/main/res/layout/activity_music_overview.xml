@@ -298,6 +298,7 @@
             app:layout_constraintBottom_toBottomOf="parent">
 
             <LinearLayout
+                android:id="@+id/llLyrics"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -329,6 +330,7 @@
 
 
             <LinearLayout
+                android:id="@+id/llQueue"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -358,6 +360,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/llRelevant"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

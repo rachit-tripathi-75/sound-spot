@@ -26,6 +26,7 @@ import com.rachit.tripathi75.soundspot.databinding.ActivityHostBinding;
 import com.rachit.tripathi75.soundspot.fragments.HomeFragment;
 import com.rachit.tripathi75.soundspot.fragments.ImportPlaylistFragment;
 import com.rachit.tripathi75.soundspot.fragments.LibraryFragment;
+import com.rachit.tripathi75.soundspot.fragments.LyraFragment;
 import com.rachit.tripathi75.soundspot.fragments.SearchFragment;
 import com.squareup.picasso.Picasso;
 
@@ -39,7 +40,7 @@ public class HostActivity extends AppCompatActivity {
     private Runnable runnable = this::showPlayBarData;
     private ApplicationClass applicationClass;
 
-    private Fragment homeFragment, searchFragment, libraryFragment, importPlaylistFragment;
+    private Fragment homeFragment, searchFragment, libraryFragment, importPlaylistFragment, lyraFragment;
     private Fragment activeFragment;
     private FragmentManager fragmentManager;
 
@@ -59,6 +60,7 @@ public class HostActivity extends AppCompatActivity {
         homeFragment = new HomeFragment();
         searchFragment = new SearchFragment();
         importPlaylistFragment = new ImportPlaylistFragment();
+        lyraFragment = new LyraFragment();
         libraryFragment = new LibraryFragment();
         activeFragment = homeFragment;
 
@@ -66,6 +68,7 @@ public class HostActivity extends AppCompatActivity {
         fragmentManager.beginTransaction()
                 .add(R.id.fragment_container, homeFragment, "Home")
 //                .add(R.id.fragment_container, searchFragment, "Search").hide(searchFragment)
+                .add(R.id.fragment_container, lyraFragment, "Lyra").hide(lyraFragment)
                 .add(R.id.fragment_container, importPlaylistFragment, "Import Playlist").hide(importPlaylistFragment)
                 .add(R.id.fragment_container, libraryFragment, "Library").hide(libraryFragment)
                 .commit();
@@ -103,9 +106,10 @@ public class HostActivity extends AppCompatActivity {
                 switchFragment(homeFragment);
             } else if (position == 1) {
 //                switchFragment(searchFragment);
-//                switchFragment(searchFragment);
-                startActivity(new Intent(this, ImportPlaylistActivity.class));
+                switchFragment(lyraFragment);
             } else if (position == 2) {
+                startActivity(new Intent(this, ImportPlaylistActivity.class));
+            } else if (position == 3) {
                 switchFragment(libraryFragment);
             }
             return true;
