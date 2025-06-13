@@ -1,10 +1,12 @@
 package com.rachit.tripathi75.soundspot.network;
 
+import com.rachit.tripathi75.soundspot.responses.ArtistByIdResponse;
 import com.rachit.tripathi75.soundspot.responses.GeniusApiSearchResponse;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public class ApiServices {
@@ -15,6 +17,13 @@ public class ApiServices {
                 @Header("Authorization") String authorization,
                 @Header("Accept") String accept,
                 @Query("q") String query
+        );
+    }
+
+    public static interface GetArtistById {
+        @GET("artists/{artist_id}")
+        Call<ArtistByIdResponse> getArtistById(
+                @Path("artist_id") String artistId
         );
     }
 }

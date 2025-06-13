@@ -111,7 +111,6 @@
     <color name="info_blue">#3B82F6</color>
 
 
-
     <!-- Dark theme colors -->
     <color name="dark_background">#121212</color>
     <color name="dark_surface">#1E1E1E</color>
@@ -122,6 +121,26 @@
     <color name="purple_surface">#2D0A4F</color>
     <color name="purple_text_primary">#F2E6FF</color>
     <color name="purple_text_secondary">#D1B3FF</color>
+
+
+    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimaryDark">#3700B3</color>
+    <color name="colorAccent">#BB86FC</color>
+    <color name="colorPurple">#9C27B0</color>
+    <color name="colorPurpleLight">#BB86FC</color>
+    <color name="colorBackground">#1E1E1E</color>
+    <color name="colorBackgroundDark">#121212</color>
+    <color name="colorBackgroundLight">#2D2D2D</color>
+    <color name="colorTextPrimary">#FFFFFF</color>
+    <color name="colorTextSecondary">#B3FFFFFF</color>
+
+    <color name="selected_chip_color">#9C27B0</color>
+    <color name="unselected_chip_color">#2D2D2D</color>
+
+    <array name="chip_background_color">
+        <item>@color/unselected_chip_color</item>
+        <item>@color/selected_chip_color</item>
+    </array>
 
 
 </resources>

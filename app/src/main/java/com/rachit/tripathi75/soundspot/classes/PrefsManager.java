@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 
 import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
+import com.rachit.tripathi75.soundspot.model.UserDetails;
 
 public class PrefsManager {
     private static final String PREF_NAME = "MyPrefs";
@@ -32,20 +33,20 @@ public class PrefsManager {
         return sharedPreferences.getBoolean("isUserLoggedIn", false);
     }
 
-    public static void setUserDetails(Context context, FirebaseUser user) {
+    public static void setUserDetails(Context context, UserDetails userDetails) {
         SharedPreferences.Editor editor = context.getSharedPreferences("userInformationPrefs", MODE_PRIVATE).edit();
         Gson gson = new Gson();
-        String json = gson.toJson(user);
+        String json = gson.toJson(userDetails);
         editor.putString("userInformation", json);
         editor.apply();
     }
 
-    public static FirebaseUser getUserDetails(Context context) {
+    public static UserDetails getUserDetails(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences("userInformationPrefs", MODE_PRIVATE);
         Gson gson = new Gson();
         String json = sharedPreferences.getString("userInformation", null);
         if (json != null) {
-            return gson.fromJson(json, FirebaseUser.class);
+            return gson.fromJson(json, UserDetails.class);
         }
         return null;
     }

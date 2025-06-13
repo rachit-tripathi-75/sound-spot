@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.text.method.ScrollingMovementMethod;
 import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.View;
@@ -25,17 +24,24 @@ import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
 
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.rachit.tripathi75.soundspot.ApplicationClass;
 import com.rachit.tripathi75.soundspot.R;
-import com.rachit.tripathi75.soundspot.classes.GetLyricsResponse;
+import com.rachit.tripathi75.soundspot.classes.PrefsManager;
 import com.rachit.tripathi75.soundspot.databinding.ActivityMusicOverviewBinding;
 import com.rachit.tripathi75.soundspot.databinding.LyricsBottomSheetBinding;
 import com.rachit.tripathi75.soundspot.databinding.MusicOverviewMoreInfoBottomSheetBinding;
+import com.rachit.tripathi75.soundspot.fragments.LyricsBottomSheetDialog;
+import com.rachit.tripathi75.soundspot.fragments.QueueBottomSheetDialog;
+import com.rachit.tripathi75.soundspot.fragments.RelevantBottomSheetDialog;
 import com.rachit.tripathi75.soundspot.model.AlbumItem;
 import com.rachit.tripathi75.soundspot.model.BasicDataRecord;
 import com.rachit.tripathi75.soundspot.network.ApiClient;
@@ -83,6 +89,9 @@ public class MusicOverviewActivity extends AppCompatActivity implements ActionPl
     private String IMAGE_URL = "";
     MusicService musicService;
     private boolean isSnipVisible = false;
+    private boolean isSongLiked = false;
+
+    private String playingSongId = "-1";
     private List<SongResponse.Artist> artsitsList = new ArrayList<>();
 
     //    @SuppressLint("ClickableViewAccessibility")
@@ -281,6 +290,13 @@ public class MusicOverviewActivity extends AppCompatActivity implements ActionPl
             bottomSheetDialog.show();
         });
 
+        binding.likeButton.setOnClickListener(view -> {
+            if (isSongLiked) {
+
+            }
+            storeSongToLikedSongs();
+        });
+
 //        binding.trackQuality.setOnClickListener(view -> {
 //            PopupMenu popupMenu = new PopupMenu(MusicOverviewActivity.this, view);
 //            popupMenu.getMenuInflater().inflate(R.menu.track_quality_menu, popupMenu.getMenu());
@@ -307,11 +323,59 @@ public class MusicOverviewActivity extends AppCompatActivity implements ActionPl
 //        });
 
 
+//        binding.llLyrics.setOnClickListener(view -> {
 
+//        });
         binding.llLyrics.setOnClickListener(view -> {
-            fetchLyrics(getSongTitle(binding.title.getText().toString()) + " " + getPrimaryArtistOfTheSong(binding.description.getText().toString()));
+
+            LyricsBottomSheetDialog lyricsBottomSheetDialog = LyricsBottomSheetDialog.newInstance(binding.title.getText().toString(), binding.description.getText().toString());
+            lyricsBottomSheetDialog.show(getSupportFragmentManager(), "Lyrics Bottom Sheet");
+
         });
 
+        binding.llQueue.setOnClickListener(view -> {
+
+            QueueBottomSheetDialog queueBottomSheetDialog = QueueBottomSheetDialog.newInstance();
+            queueBottomSheetDialog.show(getSupportFragmentManager(), "Queue Bottom Sheet");
+
+        });
+
+        binding.llRelevant.setOnClickListener(view -> {
+
+            RelevantBottomSheetDialog relevantBottomSheetDialog = RelevantBottomSheetDialog.newInstance();
+            relevantBottomSheetDialog.show(getSupportFragmentManager(), "Relevant Bottom Sheet");
+
+        });
+
+    }
+
+
+    private void storeSongToLikedSongs() {
+        Log.d("currentPlaySongTAG", "current song id: " + playingSongId);
+        DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+        String userId = PrefsManager.getUserDetails(this).getId();
+
+        DatabaseReference likedSongsRef = db.child("users").child(userId).child("likedSongs");
+
+        likedSongsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                long nextIndex = dataSnapshot.getChildrenCount();
+                likedSongsRef.child(String.valueOf(nextIndex)).setValue(playingSongId)
+                        .addOnSuccessListener(aVoid -> {
+                            binding.likeButton.setImageResource(R.drawable.ic_heart_filled);
+                            Log.d("Firebase", "Song added to liked songs at index " + nextIndex + " successfully!");
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.e("Firebase", "Error adding song to liked songs: " + e.getMessage());
+                        });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("Firebase", "Error fetching liked songs count: " + databaseError.getMessage());
+            }
+        });
     }
 
 
@@ -322,7 +386,7 @@ public class MusicOverviewActivity extends AppCompatActivity implements ActionPl
         binding.vvSnip.setPlayer(player);
 
         // Load video from raw folder
-        Uri videoUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.vibe);
+        Uri videoUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.osajna);
         MediaItem mediaItem = MediaItem.fromUri(videoUri);
         player.setMediaItem(mediaItem);
 
@@ -437,24 +501,24 @@ public class MusicOverviewActivity extends AppCompatActivity implements ActionPl
 
     private void showLyricsBottomSheetDialog() {
 
-        final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(MusicOverviewActivity.this);
-        final LyricsBottomSheetBinding lyricsBottomSheetBinding = LyricsBottomSheetBinding.inflate(getLayoutInflater());
-        lyricsBottomSheetBinding.albumTitle.setText(binding.title.getText().toString());
-        lyricsBottomSheetBinding.albumSubTitle.setText(binding.description.getText().toString());
-        Picasso.get().load(Uri.parse(IMAGE_URL)).into(lyricsBottomSheetBinding.coverImage);
-        getLyrics(lyricsBottomSheetBinding, binding.title.getText().toString(), binding.description.getText().toString());
-        bottomSheetDialog.setContentView(lyricsBottomSheetBinding.getRoot());
-        bottomSheetDialog.create();
-        lyricsBottomSheetBinding.getRoot().post(() -> {
-            View bottomSheet = bottomSheetDialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
-            if (bottomSheet != null) {
-                BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(bottomSheet);
-//                behavior.setPeekHeight(Resources.getSystem().getDisplayMetrics().heightPixels); // full height
-//                behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-                behavior.setDraggable(false);
-            }
-        });
-        bottomSheetDialog.show();
+//        final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(MusicOverviewActivity.this);
+//        final LyricsBottomSheetBinding lyricsBottomSheetBinding = LyricsBottomSheetBinding.inflate(getLayoutInflater());
+//        lyricsBottomSheetBinding.albumTitle.setText(binding.title.getText().toString());
+//        lyricsBottomSheetBinding.albumSubTitle.setText(binding.description.getText().toString());
+//        Picasso.get().load(Uri.parse(IMAGE_URL)).into(lyricsBottomSheetBinding.coverImage);
+//        getLyrics(lyricsBottomSheetBinding, binding.title.getText().toString(), binding.description.getText().toString());
+//        bottomSheetDialog.setContentView(lyricsBottomSheetBinding.getRoot());
+//        bottomSheetDialog.create();
+//        lyricsBottomSheetBinding.getRoot().post(() -> {
+//            View bottomSheet = bottomSheetDialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+//            if (bottomSheet != null) {
+//                BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(bottomSheet);
+////                behavior.setPeekHeight(Resources.getSystem().getDisplayMetrics().heightPixels); // full height
+////                behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+//                behavior.setDraggable(false);
+//            }
+//        });
+//        bottomSheetDialog.show();
     }
 
     private void getLyrics(LyricsBottomSheetBinding lyricsBottomSheetDialog, String songTitle, String artists) {
@@ -612,6 +676,9 @@ public class MusicOverviewActivity extends AppCompatActivity implements ActionPl
 
     private void onSongFetched(SongResponse songResponse, boolean forced) {
         mSongResponse = songResponse;
+        playingSongId = songResponse.data().get(0).id();
+        checkIfSongAlreadyLikedFromDatabase(playingSongId);
+        Log.d("artistIdTAG", "ididid: " + songResponse.data().get(0).id());
         binding.title.setText(songResponse.data().get(0).name());
 //        binding.description.setText(String.format("%s plays | %s | %s", convertPlayCount(songResponse.data().get(0).playCount()), songResponse.data().get(0).year(), songResponse.data().get(0).copyright()));
         binding.description.setText(regexArtistNameExtractor(songResponse.data().get(0).artists().toString()));
@@ -650,6 +717,10 @@ public class MusicOverviewActivity extends AppCompatActivity implements ActionPl
 //        }
 
         //binding.main.setBackgroundColor(ApplicationClass.IMAGE_BG_COLOR);
+    }
+
+    private void checkIfSongAlreadyLikedFromDatabase(String playingSongId) {
+        // for checking if the song already exists......
     }
 
     private String regexArtistNameExtractor(String value) {

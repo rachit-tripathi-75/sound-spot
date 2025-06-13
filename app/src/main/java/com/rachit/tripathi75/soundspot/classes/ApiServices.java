@@ -1,5 +1,7 @@
 package com.rachit.tripathi75.soundspot.classes;
 
+import com.rachit.tripathi75.soundspot.responses.ArtistByIdResponse;
+
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
@@ -14,4 +16,5 @@ public class ApiServices {
                 @Path("title") String title
         );
     }
+
 }

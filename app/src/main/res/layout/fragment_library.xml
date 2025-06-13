@@ -23,7 +23,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/profile_image"
+                android:id="@+id/ivProfilePic"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:src="@drawable/photoself"
@@ -44,7 +44,7 @@
                 android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/profile_image"
+                app:layout_constraintStart_toEndOf="@id/ivProfilePic"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageButton
@@ -177,6 +177,7 @@
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:src="@drawable/ic_grid"
                         android:tint="@color/white"
+                        android:visibility="gone"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 

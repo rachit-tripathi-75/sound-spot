@@ -10,7 +10,9 @@ import com.rachit.tripathi75.soundspot.network.utility.RequestNetworkController;
 import java.util.HashMap;
 
 public class ApiManager {
-    private static final String BASE_URL = "https://saavn.dev/api/";
+
+    // initially they all are private.......
+    public static final String BASE_URL = "https://saavn.dev/api/";
     private static final String SEARCH_URL = BASE_URL + "search";
     private static final String SONGS = "/songs";
     private static final String ALBUMS = "/albums";

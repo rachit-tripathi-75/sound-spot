@@ -12,8 +12,12 @@ import android.view.animation.AnimationUtils;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.rachit.tripathi75.soundspot.ApplicationClass;
 import com.rachit.tripathi75.soundspot.R;
 import com.rachit.tripathi75.soundspot.adapters.LibraryItemAdapter;
 import com.rachit.tripathi75.soundspot.adapters.RecentPlayAdapter;
@@ -106,6 +110,9 @@ public class LibraryFragment extends Fragment {
         // Set up bottom navigation
 
         // Set up filter chips
+
+        setupProfilePic();
+
         setupFilterChips();
 
         // Set up recent plays recycler view
@@ -114,6 +121,13 @@ public class LibraryFragment extends Fragment {
         // Set up library items recycler view
         setupLibraryItemsRecycler();
 
+    }
+
+    private void setupProfilePic() {
+        FirebaseAuth firebaseAuth = ApplicationClass.getFirebaseAuth();
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        assert user != null;
+        Glide.with(requireContext()).load(user.getPhotoUrl()).placeholder(R.drawable.user).into(binding.ivProfilePic);
     }
 
 
@@ -213,11 +227,6 @@ public class LibraryFragment extends Fragment {
         items.add(new MusicItem(7, "Purple Rain", "Single", "Prince", R.drawable.baseline_album_24));
         return items;
     }
-
-
-
-
-
 
 
 //    private String formatMillis(long millis) {

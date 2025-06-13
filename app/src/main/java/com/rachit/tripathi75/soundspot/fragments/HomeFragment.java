@@ -18,18 +18,24 @@ import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.bumptech.glide.Glide;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.rachit.tripathi75.soundspot.ApplicationClass;
 import com.rachit.tripathi75.soundspot.R;
@@ -37,6 +43,7 @@ import com.rachit.tripathi75.soundspot.activities.AboutActivity;
 import com.rachit.tripathi75.soundspot.activities.SearchMusicActivity;
 import com.rachit.tripathi75.soundspot.activities.SettingsActivity;
 import com.rachit.tripathi75.soundspot.activities.SplashScreenActivity;
+import com.rachit.tripathi75.soundspot.adapters.ActivityMainArtistsItemAdapter;
 import com.rachit.tripathi75.soundspot.classes.FollowingArtist;
 import com.rachit.tripathi75.soundspot.classes.FollowingArtistAdapter;
 import com.rachit.tripathi75.soundspot.classes.Playlist;
@@ -44,11 +51,16 @@ import com.rachit.tripathi75.soundspot.classes.PlaylistAdapter;
 import com.rachit.tripathi75.soundspot.classes.PrefsManager;
 import com.rachit.tripathi75.soundspot.databinding.FragmentHomeBinding;
 import com.rachit.tripathi75.soundspot.model.AlbumItem;
+import com.rachit.tripathi75.soundspot.model.Artist;
+import com.rachit.tripathi75.soundspot.model.FollowedArtist;
+import com.rachit.tripathi75.soundspot.network.ApiClient;
 import com.rachit.tripathi75.soundspot.network.ApiManager;
+import com.rachit.tripathi75.soundspot.network.ApiServices;
 import com.rachit.tripathi75.soundspot.network.NetworkChangeReceiver;
 import com.rachit.tripathi75.soundspot.network.utility.RequestNetwork;
 import com.rachit.tripathi75.soundspot.records.AlbumsSearch;
 import com.rachit.tripathi75.soundspot.records.ArtistsSearch;
+import com.rachit.tripathi75.soundspot.responses.ArtistByIdResponse;
 import com.skydoves.powermenu.MenuAnimation;
 import com.skydoves.powermenu.OnMenuItemClickListener;
 import com.skydoves.powermenu.PowerMenu;
@@ -62,6 +74,9 @@ import java.util.HashMap;
 import java.util.List;
 
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class HomeFragment extends Fragment {
@@ -71,7 +86,7 @@ public class HomeFragment extends Fragment {
     private final String TAG = "MainActivity";
     private ApplicationClass applicationClass;
     private final List<AlbumItem> songs = new ArrayList<>();
-    private final List<ArtistsSearch.Data.Results> artists = new ArrayList<>();
+    private final List<FollowedArtist> artists = new ArrayList<>();
     private final List<AlbumItem> albums = new ArrayList<>();
 
     private final List<Playlist> playlists = new ArrayList<>();
@@ -155,9 +170,6 @@ public class HomeFragment extends Fragment {
         OverScrollDecoratorHelper.setUpOverScroll(binding.rvFollowedArtists, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
 //        OverScrollDecoratorHelper.setUpOverScroll(binding.popularAlbumsRecyclerView, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
 //        OverScrollDecoratorHelper.setUpOverScroll(binding.savedRecyclerView, OverScrollDecoratorHelper.ORIENTATION_HORIZONTAL);
-
-        FirebaseAuth firebaseAuth = ApplicationClass.getFirebaseAuth();
-        FirebaseUser user = firebaseAuth.getCurrentUser();
 
 
 //        binding.refreshLayout.setOnRefreshListener(() -> {
@@ -253,7 +265,10 @@ public class HomeFragment extends Fragment {
 
 
     private void initViews() {
-
+        FirebaseAuth firebaseAuth = ApplicationClass.getFirebaseAuth();
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        assert user != null;
+        Glide.with(requireContext()).load(user.getPhotoUrl()).placeholder(R.drawable.user).into(binding.ivProfilePic);
     }
 
     private void setupAnimations() {
@@ -512,6 +527,61 @@ public class HomeFragment extends Fragment {
 //            }
 //        });
 
+        List<String> followedArtists = new ArrayList<>();
+
+        DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+        db.child("users").child(PrefsManager.getUserDetails(requireContext()).getId()).child("followedArtistsId")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                        for (DataSnapshot artistSnapshot : snapshot.getChildren()) {
+                            String artistId = artistSnapshot.getValue(String.class);
+                            followedArtists.add(artistId);
+                        }
+
+                        if (followedArtists.isEmpty()) return;
+
+                        Log.d("followedArtistsxx", "Followed Artists: " + followedArtists.toString());
+
+                        for (String artistId : followedArtists) {
+                            ApiServices.GetArtistById getArtistById = ApiClient.getClient(ApiManager.BASE_URL)
+                                    .create(ApiServices.GetArtistById.class);
+
+                            getArtistById.getArtistById(artistId).enqueue(new Callback<ArtistByIdResponse>() {
+                                @Override
+                                public void onResponse(Call<ArtistByIdResponse> call, Response<ArtistByIdResponse> response) {
+                                    if (response.isSuccessful() && response.body() != null) {
+                                        ArtistByIdResponse s = response.body();
+                                        artists.add(new FollowedArtist(s.getData().getId(), s.getData().getName(), s.getData().getImage().get(2).getImageUrl()));
+
+
+                                        if (artists.size() == followedArtists.size()) {
+                                            FollowingArtistAdapter adapter = new FollowingArtistAdapter(requireContext(), artists);
+                                            binding.rvFollowedArtists.setAdapter(adapter);
+                                            adapter.notifyDataSetChanged();
+                                        }
+                                    } else {
+                                        Log.d("artistxxx", "API failed: " + response.code());
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<ArtistByIdResponse> call, Throwable t) {
+                                    Log.d("artistxxx", "onFailure: " + t.getMessage());
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("onCancelled", "Failed to read data", error.toException());
+                    }
+                });
+
+
+
         apiManager.searchArtists(" ", 0, 15, new RequestNetwork.RequestListener() {
             @Override
             public void onResponse(String tag, String response, HashMap<String, Object> responseHeaders) {
@@ -519,13 +589,13 @@ public class HomeFragment extends Fragment {
                 Log.i(TAG, "onResponse: " + response);
                 if (artistSearch.success()) {
                     artistSearch.data().results().forEach(results -> {
-                        artists.add(results);
+//                        artists.add(results);
                         Gson gson = new Gson();
 //                        Log.d("artistsTAG", gson.toJson(results));
 //                        ActivityMainArtistsItemAdapter adapter = new ActivityMainArtistsItemAdapter(artists);
-                        FollowingArtistAdapter adapter = new FollowingArtistAdapter(requireContext(), artists);
-                        binding.rvFollowedArtists.setAdapter(adapter);
-                        adapter.notifyDataSetChanged();
+//                        FollowingArtistAdapter adapter = new FollowingArtistAdapter(requireContext(), artists);
+//                        binding.rvFollowedArtists.setAdapter(adapter);
+//                        adapter.notifyDataSetChanged();
                     });
                     ApplicationClass.sharedPreferenceManager.setHomeArtistsRecommended(artistSearch);
                 } else {

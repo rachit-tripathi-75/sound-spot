@@ -313,7 +313,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_lyrics"
-                    android:visibility="invisible" />
+                    android:visibility="gone" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -344,7 +344,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_queue"
-                    android:visibility="invisible" />
+                    android:visibility="gone" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -374,7 +374,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_relevant"
-                    android:visibility="invisible" />
+                    android:visibility="gone" />
 
                 <TextView
                     android:layout_width="wrap_content"

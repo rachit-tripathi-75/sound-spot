@@ -1,10 +1,13 @@
 package com.rachit.tripathi75.soundspot.activities;
 
+import static androidx.core.content.ContentProviderCompat.requireContext;
+
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,8 +17,14 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.rachit.tripathi75.soundspot.R;
+import com.rachit.tripathi75.soundspot.classes.PrefsManager;
 import com.rachit.tripathi75.soundspot.databinding.ActivityArtistProfileBinding;
 import com.rachit.tripathi75.soundspot.fragments.AlbumsFragment;
 import com.rachit.tripathi75.soundspot.fragments.ClipsFragment;
@@ -68,6 +77,7 @@ public class ArtistProfileActivity extends AppCompatActivity {
 
         setupToolbar();
         setupAnimations();
+        setupFollowingButton();
         setupListeners();
         showData();
 
@@ -113,6 +123,37 @@ public class ArtistProfileActivity extends AppCompatActivity {
 //
 //        showShimmerData();
 //        showData();
+    }
+
+    private void setupFollowingButton() {
+        DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+        db.child("users").child(PrefsManager.getUserDetails(this).getId()).child("followedArtistsId").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                boolean found = false;
+                for (DataSnapshot artistSnapshot : snapshot.getChildren()) {
+                    String id = artistSnapshot.getValue(String.class);
+                    if (id != null && id.equals(artistId)) {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (found) {
+                    Log.d("checkArtist", "Artist ID " + artistId + " is followed.");
+                    binding.followButton.setText(getString(R.string.following));
+                } else {
+                    Log.d("checkArtist", "Artist ID " + artistId + " is NOT followed.");
+                    binding.followButton.setText(getString(R.string.follow));
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("FirebaseError", "Error reading data", error.toException());
+            }
+        });
     }
 
 

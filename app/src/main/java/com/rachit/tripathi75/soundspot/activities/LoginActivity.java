@@ -32,19 +32,24 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.rachit.tripathi75.soundspot.ApplicationClass;
 import com.rachit.tripathi75.soundspot.R;
 import com.rachit.tripathi75.soundspot.adapters.SingersViewPagerAdapter;
 import com.rachit.tripathi75.soundspot.classes.DissolvePageTransformer;
 import com.rachit.tripathi75.soundspot.classes.PrefsManager;
 import com.rachit.tripathi75.soundspot.databinding.ActivityLoginBinding;
+import com.rachit.tripathi75.soundspot.model.UserDetails;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 public class LoginActivity extends AppCompatActivity {
@@ -93,7 +98,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void listeners() {
         binding.tvSignUpAnnotation.setOnClickListener(view -> {
-            Intent intent = new Intent(LoginActivity.this, LoginActivity.class);
+            Intent intent = new Intent(LoginActivity.this, CreateAccountActivity.class);
             startActivity(intent, options.toBundle());
             finish();
         });
@@ -109,7 +114,7 @@ public class LoginActivity extends AppCompatActivity {
             LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
                 @Override
                 public void onSuccess(LoginResult loginResult) {
-                    handleFacebookAccessToken(loginResult.getAccessToken());
+//                    handleFacebookAccessToken(loginResult.getAccessToken());
                 }
 
                 @Override
@@ -124,9 +129,18 @@ public class LoginActivity extends AppCompatActivity {
             });
         });
 
-        binding.vgApple.setOnClickListener(view -> {
-            PrefsManager.setLoginInType(LoginActivity.this, 4);
-            Toast.makeText(this, "Feature under development", Toast.LENGTH_SHORT).show();
+        binding.vgX.setOnClickListener(view -> {
+//            PrefsManager.setLoginInType(LoginActivity.this, 4);
+//            Toast.makeText(this, "Feature under development", Toast.LENGTH_SHORT).show();
+            DatabaseReference db = FirebaseDatabase.getInstance().getReference();
+            db.child("message").setValue("Hello");
+            HashMap<String, Integer> mp = new HashMap<String, Integer>();
+            mp.put("age", 20);
+            mp.put("x", 21);
+            mp.put("y", 22);
+
+            db.child("users").child("user1").child("age").setValue(mp);
+
         });
 
         binding.vgGoogle.setOnClickListener(view -> {
@@ -135,22 +149,33 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    private void handleFacebookAccessToken(AccessToken accessToken) {
-        AuthCredential credential = FacebookAuthProvider.getCredential(accessToken.getToken());
-        firebaseAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        FirebaseUser user = firebaseAuth.getCurrentUser();
-                        PrefsManager.setSession(LoginActivity.this, true); // set session true as user has logged in!!
-                        PrefsManager.setUserDetails(LoginActivity.this, user);
-                        PrefsManager.setLoginInType(LoginActivity.this, 3);
-                        startActivity(new Intent(LoginActivity.this, HostActivity.class));
-                    } else {
-                        Toast.makeText(LoginActivity.this, "Authentication failed", Toast.LENGTH_SHORT).show();
-                    }
-                }).addOnFailureListener(e -> {
-                    Toast.makeText(LoginActivity.this, "An error occurred. Please try again later", Toast.LENGTH_SHORT).show();
-                });
+
+
+    private String cleanEmail(String email) {
+
+        if (email == null) {
+            return "";
+        }
+
+        StringBuilder cleanEmailString = new StringBuilder();
+        final char[] FORBIDDEN_CHARS = {'.', '#', '$', '[', ']'};
+
+        for (char character : email.toCharArray()) {
+            boolean isForbidden = false;
+
+            for (char forbiddenChar : FORBIDDEN_CHARS) {
+                if (character == forbiddenChar) {
+                    isForbidden = true;
+                    break;
+                }
+            }
+            if (!isForbidden) {
+                cleanEmailString.append(character);
+            }
+        }
+
+
+        return cleanEmailString.toString();
     }
 
     private void signInWithGoogle() {
@@ -175,8 +200,9 @@ public class LoginActivity extends AppCompatActivity {
                         binding.progressBar.setVisibility(View.GONE);
                         binding.btnSignIn.setVisibility(View.VISIBLE);
                         FirebaseUser user = firebaseAuth.getCurrentUser();
+                        UserDetails userDetails = new UserDetails(cleanEmail(user.getEmail()), user.getDisplayName(), user.getEmail(), user.getPhotoUrl().toString());
                         PrefsManager.setSession(LoginActivity.this, true); // set session true as user has logged in!!
-                        PrefsManager.setUserDetails(LoginActivity.this, user);
+                        PrefsManager.setUserDetails(LoginActivity.this, userDetails);
                         PrefsManager.setLoginInType(LoginActivity.this, 1);
                         startActivity(new Intent(LoginActivity.this, HostActivity.class));
 
@@ -322,8 +348,9 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         FirebaseUser user = firebaseAuth.getCurrentUser();
+                        UserDetails userDetails = new UserDetails(cleanEmail(user.getEmail()), user.getDisplayName(), user.getEmail(), user.getPhotoUrl().toString());
                         PrefsManager.setSession(LoginActivity.this, true); // set session true as user has logged in!!
-                        PrefsManager.setUserDetails(LoginActivity.this, user);
+                        PrefsManager.setUserDetails(LoginActivity.this, userDetails);
                         PrefsManager.setLoginInType(LoginActivity.this, 2);
                         startActivity(new Intent(LoginActivity.this, HostActivity.class));
                     } else {

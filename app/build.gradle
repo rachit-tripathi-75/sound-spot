@@ -50,6 +50,7 @@ dependencies {
     implementation libs.googleid
     implementation libs.navigation.fragment
     implementation libs.navigation.ui
+    implementation libs.firebase.database
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
@@ -107,6 +108,7 @@ dependencies {
     implementation 'com.airbnb.android:lottie:6.6.6'
     implementation "androidx.gridlayout:gridlayout:1.1.0"
     implementation 'org.jsoup:jsoup:1.15.3'
+    implementation 'com.google.android.material:material:1.12.0'
 
 
 }

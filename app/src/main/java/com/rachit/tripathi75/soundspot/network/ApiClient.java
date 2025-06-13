@@ -17,4 +17,14 @@ public class ApiClient {
         }
         return retrofit;
     }
+
+    public static Retrofit getClient(String BASE_URL) {
+        if (retrofit == null) {
+            retrofit = new Retrofit.Builder()
+                    .baseUrl(BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+        }
+        return retrofit;
+    }
 }
